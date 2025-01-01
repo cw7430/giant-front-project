@@ -13,6 +13,8 @@ import {
     requestTeamList,
 } from "../../servers/employServer";
 import { sortCode } from "../../util/sort";
+import AttandanceListTable from "./employee-attendance/AttendanceListTable";
+import SalaryListTable from "./employee-salary/SalaryListTable";
 
 function Employee() {
     const navigate = useNavigate();
@@ -29,6 +31,8 @@ function Employee() {
     const [departmentList, setDepartmentList] = useState([]);
     const [teamList, setTeamList] = useState([]);
     const [showRegisterModal, setShowRegisterModal] = useState(false);
+    
+    const [managementSort, setManagementSort] =  useState("employeeNumberAsc");
 
     const handleCloseAlertModal = () => setShowAlertModal(false);
 
@@ -143,6 +147,7 @@ function Employee() {
                     classList={classList}
                     employmentStatusList={employmentStatusList}
                     setFilteredEmployeeList={setFilteredEmployeeList}
+                    setManagementSort={setManagementSort}
                 />
             )}
             <Container>
@@ -187,10 +192,13 @@ function Employee() {
             {view === "List" && (
                 <EmployeeListTable
                     filteredEmployeeList={filteredEmployeeList}
+                    setFilteredEmployeeList={setFilteredEmployeeList}
+                    managementSort={managementSort}
+                    setManagementSort={setManagementSort}
                 />
             )}
-            {view === "Attendance" && <div>{"근태 관리 컴포넌트"}</div>}
-            {view === "Salary" && <div>{"급여 관리 컴포넌트"}</div>}
+            {view === "Attendance" && <AttandanceListTable />}
+            {view === "Salary" && <SalaryListTable />}
 
             <AlertModal
                 showAlertModal={showAlertModal}

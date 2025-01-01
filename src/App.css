@@ -1,1 +1,17 @@
+.icon-button {
+    all: unset;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
 
+  .icon-button:hover #caret-up,
+.icon-button:hover #caret-down {
+    stroke: gray;
+}
+
+.icon-button:hover #caret-up-fill,
+.icon-button:hover #caret-down-fill {
+    fill: lightgray;
+}

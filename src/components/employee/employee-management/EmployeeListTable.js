@@ -1,15 +1,79 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Col, Container, Row, Table, Button } from "react-bootstrap";
+import { Col, Container, Row, Table } from "react-bootstrap";
 import CustomPagination from "../../../util/CustomPagination";
 import CaretUp from "../../../assets/svg/CaretUp";
 import CaretUpFill from "../../../assets/svg/CaretUpFill";
 import CaretDown from "../../../assets/svg/CaretDown";
 import CaretDownFill from "../../../assets/svg/CaretDownFill";
 import { EMPLOYEE_PROFILE_PATH } from "../../../constant/url";
+import { sortCode } from "../../../util/sort";
 
 function EmployeeListTable(props) {
-    const { filteredEmployeeList } = props;
+    const {
+        filteredEmployeeList,
+        setFilteredEmployeeList,
+        managementSort,
+        setManagementSort,
+    } = props;
+
+    const handleSortChange = (sortKey) => {
+        setManagementSort(sortKey);
+
+        let sortedList = [];
+        switch (sortKey) {
+            case "employeeNumberAsc":
+                sortedList = sortCode(
+                    [...filteredEmployeeList],
+                    "employeeNumber",
+                    "asc"
+                );
+                break;
+            case "employeeNumberDesc":
+                sortedList = sortCode(
+                    [...filteredEmployeeList],
+                    "employeeNumber",
+                    "desc"
+                );
+                break;
+            case "departmentNumberAsc":
+                sortedList = sortCode(
+                    [...filteredEmployeeList],
+                    "departmentNumber",
+                    "asc"
+                );
+                break;
+            case "departmentNumberDesc":
+                sortedList = sortCode(
+                    [...filteredEmployeeList],
+                    "departmentNumber",
+                    "desc"
+                );
+                break;
+            case "classCodeAsc":
+                sortedList = sortCode(
+                    [...filteredEmployeeList],
+                    "classCode",
+                    "asc"
+                );
+                break;
+            case "classCodeDesc":
+                sortedList = sortCode(
+                    [...filteredEmployeeList],
+                    "classCode",
+                    "desc"
+                );
+                break;
+            default:
+                sortedList = sortCode(
+                    [...filteredEmployeeList],
+                    "employeeNumber",
+                    "asc"
+                );
+        }
+
+        setFilteredEmployeeList(sortedList); // 상태 업데이트
+    };
 
     const navigate = useNavigate();
 
@@ -26,11 +90,101 @@ function EmployeeListTable(props) {
                     <Table bordered hover>
                         <thead className="table-dark">
                             <tr>
-                                <th>{"사번"}</th>
+                                <th>
+                                    {"사번"}
+                                    <button
+                                        className="icon-button"
+                                        onClick={() =>
+                                            handleSortChange(
+                                                "employeeNumberAsc"
+                                            )
+                                        }
+                                    >
+                                        {managementSort ===
+                                        "employeeNumberAsc" ? (
+                                            <CaretUpFill />
+                                        ) : (
+                                            <CaretUp />
+                                        )}
+                                    </button>
+                                    <button
+                                        className="icon-button"
+                                        onClick={() =>
+                                            handleSortChange(
+                                                "employeeNumberDesc"
+                                            )
+                                        }
+                                    >
+                                        {managementSort ===
+                                        "employeeNumberDesc" ? (
+                                            <CaretDownFill />
+                                        ) : (
+                                            <CaretDown />
+                                        )}
+                                    </button>
+                                </th>
                                 <th>{"이름"}</th>
                                 <th>{"연락처"}</th>
-                                <th>{"부서"}</th>
-                                <th>{"직급"}</th>
+                                <th>
+                                    {"부서"}
+                                    <button
+                                        className="icon-button"
+                                        onClick={() =>
+                                            handleSortChange(
+                                                "departmentNumberAsc"
+                                            )
+                                        }
+                                    >
+                                        {managementSort ===
+                                        "departmentNumberAsc" ? (
+                                            <CaretUpFill />
+                                        ) : (
+                                            <CaretUp />
+                                        )}
+                                    </button>
+                                    <button
+                                        className="icon-button"
+                                        onClick={() =>
+                                            handleSortChange(
+                                                "departmentNumberDesc"
+                                            )
+                                        }
+                                    >
+                                        {managementSort ===
+                                        "departmentNumberDesc" ? (
+                                            <CaretDownFill />
+                                        ) : (
+                                            <CaretDown />
+                                        )}
+                                    </button>
+                                </th>
+                                <th>
+                                    {"직급"}
+                                    <button
+                                        className="icon-button"
+                                        onClick={() =>
+                                            handleSortChange("classCodeAsc")
+                                        }
+                                    >
+                                        {managementSort === "classCodeAsc" ? (
+                                            <CaretUpFill />
+                                        ) : (
+                                            <CaretUp />
+                                        )}
+                                    </button>
+                                    <button
+                                        className="icon-button"
+                                        onClick={() =>
+                                            handleSortChange("classCodeDesc")
+                                        }
+                                    >
+                                        {managementSort === "classCodeDesc" ? (
+                                            <CaretDownFill />
+                                        ) : (
+                                            <CaretDown />
+                                        )}
+                                    </button>
+                                </th>
                                 <th>{"등록일"}</th>
                                 <th>{"수정일"}</th>
                                 <th>{"재직여부"}</th>

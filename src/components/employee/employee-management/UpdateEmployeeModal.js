@@ -295,7 +295,7 @@ function UpdateEmployeeModal(props) {
                         </Form.Label>
                         <Row id="employmentStatus" className="mt-3">
                             {employmentStatusList.map((employmentStatus) => (
-                                <Col xs="auto">
+                                <Col xs="auto" key={employmentStatus.employmentStatusCode}>
                                     <Form.Check
                                         type="radio"
                                         label={
