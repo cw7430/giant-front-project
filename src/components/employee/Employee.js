@@ -13,8 +13,8 @@ import {
     requestTeamList,
 } from "../../servers/employServer";
 import { sortCode } from "../../util/sort";
-import AttandanceListTable from "./employee-attendance/AttendanceListTable";
-import SalaryListTable from "./employee-salary/SalaryListTable";
+import AttandanceListTable from "./attendance-management/AttandanceListTable"
+import SalaryListTable from "./salary-management/SalaryListTable";
 
 function Employee() {
     const navigate = useNavigate();
