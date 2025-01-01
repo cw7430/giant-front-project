@@ -32,7 +32,7 @@ function Employee() {
     const [teamList, setTeamList] = useState([]);
     const [showRegisterModal, setShowRegisterModal] = useState(false);
     
-    const [managementSort, setManagementSort] =  useState("employeeNumberAsc");
+    const [employeeSort, setEmployeeSort] =  useState("employeeNumberAsc");
 
     const handleCloseAlertModal = () => setShowAlertModal(false);
 
@@ -147,7 +147,7 @@ function Employee() {
                     classList={classList}
                     employmentStatusList={employmentStatusList}
                     setFilteredEmployeeList={setFilteredEmployeeList}
-                    setManagementSort={setManagementSort}
+                    setEmployeeSort={setEmployeeSort}
                 />
             )}
             <Container>
@@ -193,8 +193,8 @@ function Employee() {
                 <EmployeeListTable
                     filteredEmployeeList={filteredEmployeeList}
                     setFilteredEmployeeList={setFilteredEmployeeList}
-                    managementSort={managementSort}
-                    setManagementSort={setManagementSort}
+                    employeeSort={employeeSort}
+                    setEmployeeSort={setEmployeeSort}
                 />
             )}
             {view === "Attendance" && <AttandanceListTable />}

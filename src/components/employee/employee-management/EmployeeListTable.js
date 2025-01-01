@@ -13,12 +13,12 @@ function EmployeeListTable(props) {
     const {
         filteredEmployeeList,
         setFilteredEmployeeList,
-        managementSort,
-        setManagementSort,
+        employeeSort,
+        setEmployeeSort,
     } = props;
 
     const handleSortChange = (sortKey) => {
-        setManagementSort(sortKey);
+        setEmployeeSort(sortKey);
 
         let sortedList = [];
         switch (sortKey) {
@@ -100,7 +100,7 @@ function EmployeeListTable(props) {
                                             )
                                         }
                                     >
-                                        {managementSort ===
+                                        {employeeSort ===
                                         "employeeNumberAsc" ? (
                                             <CaretUpFill />
                                         ) : (
@@ -115,7 +115,7 @@ function EmployeeListTable(props) {
                                             )
                                         }
                                     >
-                                        {managementSort ===
+                                        {employeeSort ===
                                         "employeeNumberDesc" ? (
                                             <CaretDownFill />
                                         ) : (
@@ -135,7 +135,7 @@ function EmployeeListTable(props) {
                                             )
                                         }
                                     >
-                                        {managementSort ===
+                                        {employeeSort ===
                                         "departmentNumberAsc" ? (
                                             <CaretUpFill />
                                         ) : (
@@ -150,7 +150,7 @@ function EmployeeListTable(props) {
                                             )
                                         }
                                     >
-                                        {managementSort ===
+                                        {employeeSort ===
                                         "departmentNumberDesc" ? (
                                             <CaretDownFill />
                                         ) : (
@@ -166,7 +166,7 @@ function EmployeeListTable(props) {
                                             handleSortChange("classCodeAsc")
                                         }
                                     >
-                                        {managementSort === "classCodeAsc" ? (
+                                        {employeeSort === "classCodeAsc" ? (
                                             <CaretUpFill />
                                         ) : (
                                             <CaretUp />
@@ -178,7 +178,7 @@ function EmployeeListTable(props) {
                                             handleSortChange("classCodeDesc")
                                         }
                                     >
-                                        {managementSort === "classCodeDesc" ? (
+                                        {employeeSort === "classCodeDesc" ? (
                                             <CaretDownFill />
                                         ) : (
                                             <CaretDown />

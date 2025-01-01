@@ -15,7 +15,7 @@ function EmployeeListSearchBox(props) {
         classList,
         employmentStatusList,
         setFilteredEmployeeList,
-        setManagementSort,
+        setEmployeeSort,
     } = props;
 
     const keywords = [
@@ -71,7 +71,7 @@ function EmployeeListSearchBox(props) {
     };
 
     const handleSearch = () => {
-        setManagementSort("employeeNumberAsc");
+        setEmployeeSort("employeeNumberAsc");
         setFilteredEmployeeList(employeeListData);
         const searchValue = searchWordRef.current.value.toLowerCase();
         setSearching(true);
@@ -112,7 +112,7 @@ function EmployeeListSearchBox(props) {
     };
 
     const handleReset = () => {
-        setManagementSort("employeeNumberAsc");
+        setEmployeeSort("employeeNumberAsc");
         setFilteredEmployeeList(employeeListData);
         setSearching(false);
         searchWordRef.current.value = "";
