@@ -55,10 +55,9 @@ function EmployeeProfile() {
         const employmentStatusResponse = await requestEmploymentStatusList();
         const departmentResponse = await requestDepartmentList();
         const teamResponse = await requestTeamList();
-        const { result, ...profileData } = profileResponse;
 
         if (
-            result !== "SU" ||
+            profileResponse.result !== "SU" ||
             classResponse.result !== "SU" ||
             employmentStatusResponse.result !== "SU" ||
             departmentResponse.result !== "SU" ||
@@ -93,7 +92,7 @@ function EmployeeProfile() {
                 "asc"
             );
 
-            setUserProfile(profileData);
+            setUserProfile(profileResponse.responseData);
             setClassList(sortedClassList);
             setEmploymentStatusList(sortedEmploymentStatusList);
             setDepartmentList(sortedDepartmentList);

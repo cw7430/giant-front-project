@@ -37,9 +37,8 @@ function MyProfile() {
             }
 
             const response = await requestProfile(request);
-            const { result, ...profileData } = response;
-            if (result === "SU") {
-                setUserProfile(profileData);
+            if (response.result === "SU") {
+                setUserProfile(response.responseData);
             } else {
                 setAlertTitle("서버 에러입니다.");
                 setAlertText("다시 시도해 주세요.");
