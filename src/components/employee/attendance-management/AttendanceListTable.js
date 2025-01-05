@@ -1,6 +1,12 @@
+import { useState } from "react";
 import { Col, Container, Row, Table } from "react-bootstrap";
+import CustomPagination from "../../../util/CustomPagination";
 
-function AttandanceListTable() {
+function AttandanceListTable(props) {
+    const { filteredAttendanceList, setFilteredEmployeeList } = props;
+
+    const [pagedData, setPagedData] = useState(filteredAttendanceList);
+
     return (
         <Container>
             <Row>
@@ -18,17 +24,32 @@ function AttandanceListTable() {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>{""}</td>
-                                <td>{""}</td>
-                                <td>{""}</td>
-                                <td>{""}</td>
-                                <td>{""}</td>
-                                <td>{""}</td>
-                                <td>{""}</td>
-                            </tr>
+                            {pagedData.map((attendance) => (
+                                <tr
+                                    key={attendance.attendanceId}
+                                    style={{ cursor: "pointer" }}
+                                >
+                                    <td>{attendance.employeeNumber}</td>
+                                    <td>{attendance.employeeName}</td>
+                                    <td>{attendance.commuteDate}</td>
+                                    <td>{attendance.commuteTime?.split(":").slice(0, 2).join(":")}</td>
+                                    <td>{attendance.quitTime?.split(":").slice(0, 2).join(":")}</td>
+                                    <td>{attendance.attendanceStatusName}</td>
+                                    <td>{attendance.attendanceRemark}</td>
+                                </tr>
+                            ))}
                         </tbody>
                     </Table>
+                </Col>
+            </Row>
+            <Row className="justify-content-center">
+                <Col md="auto">
+                    <CustomPagination
+                        data={filteredAttendanceList}
+                        itemsPerPage={10}
+                        pageBlockSize={5}
+                        setPagedData={setPagedData}
+                    />
                 </Col>
             </Row>
         </Container>

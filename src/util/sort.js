@@ -16,3 +16,18 @@ export const sortCode = (list, key, order = 'asc') => {
             : Number(bNumber) - Number(aNumber);
     });
 };
+
+export const sortDate = (list, key, order = 'asc') => {
+    return list.sort((a, b) => {
+        // 날짜 문자열을 Date 객체로 변환
+        const dateA = new Date(a[key]);
+        const dateB = new Date(b[key]);
+
+        // 날짜 비교
+        if (order === 'asc') {
+            return dateA - dateB;
+        } else {
+            return dateB - dateA;
+        }
+    });
+};

@@ -11,13 +11,20 @@ import {
     requestEmploymentStatusList,
     requestDepartmentList,
     requestTeamList,
+    requestAttendanceList,
 } from "../../servers/employServer";
 import { sortCode } from "../../util/sort";
 import AttandanceListTable from "./attendance-management/AttendanceListTable";
 import SalaryListTable from "./salary-management/SalaryListTable";
 
 function Employee() {
+    const now = new Date();
+    const currentYearMonth = `${now.getFullYear()}-${String(
+        now.getMonth() + 1
+    ).padStart(2, "0")}`;
+
     const navigate = useNavigate();
+    const [yearMonth, setYearMonth] = useState(currentYearMonth);
     const [loading, setLoading] = useState(true);
     const [showAlertModal, setShowAlertModal] = useState(false);
     const [alertTitle, setAlertTitle] = useState("");
@@ -27,12 +34,15 @@ function Employee() {
     const [filteredEmployeeList, setFilteredEmployeeList] =
         useState(employeeListData);
     const [classList, setClassList] = useState([]);
+    const [attendanceList, setAttendanceList] = useState([]);
+    const [filteredAttendanceList, setFilteredAttendanceList] =
+        useState(attendanceList);
     const [employmentStatusList, setEmploymentStatusList] = useState([]);
     const [departmentList, setDepartmentList] = useState([]);
     const [teamList, setTeamList] = useState([]);
     const [showRegisterModal, setShowRegisterModal] = useState(false);
-    
-    const [employeeSort, setEmployeeSort] =  useState("employeeNumberAsc");
+
+    const [employeeSort, setEmployeeSort] = useState("employeeNumberAsc");
 
     const handleCloseAlertModal = () => setShowAlertModal(false);
 
@@ -67,6 +77,9 @@ function Employee() {
                 await requestEmploymentStatusList();
             const departmentResponse = await requestDepartmentList();
             const teamResponse = await requestTeamList();
+            const attendanceListResponse = await requestAttendanceList({
+                commuteDate: yearMonth,
+            });
 
             // 결과 검사
             if (
@@ -74,7 +87,8 @@ function Employee() {
                 classResponse.result !== "SU" ||
                 employmentStatusResponse.result !== "SU" ||
                 departmentResponse.result !== "SU" ||
-                teamResponse.result !== "SU"
+                teamResponse.result !== "SU" ||
+                attendanceListResponse.result !== "SU"
             ) {
                 setAlertTitle("경고");
                 setAlertText("일부 데이터에 오류가 있습니다.");
@@ -113,6 +127,7 @@ function Employee() {
                 setEmploymentStatusList(sortedEmploymentStatusList);
                 setDepartmentList(sortedDepartmentList);
                 setTeamList(sortedTeamList);
+                setAttendanceList(attendanceListResponse.responseData);
             }
         } catch (error) {
             console.error("데이터 요청 중 오류 발생:", error);
@@ -131,6 +146,10 @@ function Employee() {
     useEffect(() => {
         setFilteredEmployeeList(employeeListData);
     }, [employeeListData]);
+
+    useEffect(() => {
+        setFilteredAttendanceList(attendanceList);
+    }, [attendanceList]);
 
     if (loading) {
         return <div>로딩중...</div>; // 로딩 중일 때 표시
@@ -197,7 +216,12 @@ function Employee() {
                     setEmployeeSort={setEmployeeSort}
                 />
             )}
-            {view === "Attendance" && <AttandanceListTable />}
+            {view === "Attendance" && (
+                <AttandanceListTable
+                    filteredAttendanceList={filteredAttendanceList}
+                    setFilteredEmployeeList={setFilteredEmployeeList}
+                />
+            )}
             {view === "Salary" && <SalaryListTable />}
 
             <AlertModal
