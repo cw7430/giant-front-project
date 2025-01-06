@@ -15,7 +15,7 @@ function ChangePasswordModal(props) {
         userId,
         employeeNumber,
         showChangePasswordModal,
-        handleCloseChangePassowordModal,
+        handleCloseChangePasswordModal,
         originalPasswordType,
         changePasswordType,
         checkPasswordType,
@@ -167,7 +167,7 @@ function ChangePasswordModal(props) {
                 employeeNumber: employeeNumber,
             });
             updateUserProfile(updatedProfileResponse);
-            handleCloseChangePassowordModal();
+            handleCloseChangePasswordModal();
             setAlertTitle("변경완료");
             setAlertText("비밀번호 변경이 완료되었습니다.");
             setShowAlertModal(true);
@@ -184,7 +184,7 @@ function ChangePasswordModal(props) {
             <Modal
                 backdrop="static"
                 show={showChangePasswordModal}
-                onHide={handleCloseChangePassowordModal}
+                onHide={handleCloseChangePasswordModal}
             >
                 <Modal.Header>
                     <Modal.Title>{"비밀번호 변경"}</Modal.Title>
@@ -274,7 +274,7 @@ function ChangePasswordModal(props) {
                     </Button>
                     <Button
                         variant="danger"
-                        onClick={handleCloseChangePassowordModal}
+                        onClick={handleCloseChangePasswordModal}
                     >
                         {"닫기"}
                     </Button>

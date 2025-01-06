@@ -16,6 +16,7 @@ import {
 import { sortCode } from "../../util/sort";
 import AttandanceListTable from "./attendance-management/AttendanceListTable";
 import SalaryListTable from "./salary-management/SalaryListTable";
+import AttendanceListSearchBox from "./attendance-management/AttendanceListSearchBox";
 
 function Employee() {
     const now = new Date();
@@ -169,6 +170,7 @@ function Employee() {
                     setEmployeeSort={setEmployeeSort}
                 />
             )}
+            {view === "Attendance" && <AttendanceListSearchBox />}
             <Container>
                 <Row className="justify-content-between">
                     <Col xs={9} className="d-flex">
