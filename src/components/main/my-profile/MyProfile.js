@@ -3,6 +3,7 @@ import { Container, Row, Col, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { MAIN_PATH } from "../../../constant/url";
 import { requestProfile } from "../../../servers/employServer";
+import Loader from "../../../util/Loader";
 import ChangeUserIdModal from "./ChangeUserIdModal";
 import ChangePasswordModal from "./ChangePasswordModal";
 import AlertModal from "../../modals/AlertModal";
@@ -65,7 +66,7 @@ function MyProfile() {
     };
 
     if (!userProfile) {
-        return <div>로딩중...</div>;
+        return <Loader />;
     }
 
     const userId = userProfile.userId;

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Nav, Container, Row, Col, Button } from "react-bootstrap";
+import Loader from "../../util/Loader";
 import EmployeeListSearchBox from "./employee-management/EmployeeListSearchBox";
 import EmployeeListTable from "./employee-management/EmployeeListTable";
 import AlertModal from "../modals/AlertModal";
@@ -39,10 +40,10 @@ function Employee() {
     const [attendanceList, setAttendanceList] = useState([]);
     const [filteredAttendanceList, setFilteredAttendanceList] =
         useState(attendanceList);
-    const [attendanceStatusList, setAttendanceStatusList] = useState([]);
     const [employmentStatusList, setEmploymentStatusList] = useState([]);
     const [departmentList, setDepartmentList] = useState([]);
     const [teamList, setTeamList] = useState([]);
+    const [attendanceStatusList, setAttendanceStatusList] = useState([]);
     const [showRegisterModal, setShowRegisterModal] = useState(false);
 
     const [employeeSort, setEmployeeSort] = useState("employeeNumberAsc");
@@ -97,26 +98,18 @@ function Employee() {
         await fetchData(
             async () => {
                 const profileListResponse = await requestProfileList();
-                const employmentStatusResponse =
-                    await requestEmploymentStatusList();
                 const departmentResponse = await requestDepartmentList();
                 const teamResponse = await requestTeamList();
 
                 return {
                     result:
                         profileListResponse.result === "SU" &&
-                        employmentStatusResponse.result === "SU" &&
                         departmentResponse.result === "SU" &&
                         teamResponse.result === "SU"
                             ? "SU"
                             : "FA",
                     responseData: {
                         profileList: profileListResponse.responseData,
-                        employmentStatusList: sortCode(
-                            employmentStatusResponse.responseData,
-                            "employmentStatusCode",
-                            "asc"
-                        ),
                         departmentList: sortCode(
                             departmentResponse.responseData,
                             "departmentNumber",
@@ -132,7 +125,6 @@ function Employee() {
             },
             (data) => {
                 setEmployeeListData(data.profileList);
-                setEmploymentStatusList(data.employmentStatusList);
                 setDepartmentList(data.departmentList);
                 setTeamList(data.teamList);
             }
@@ -160,6 +152,27 @@ function Employee() {
         );
     }, []);
 
+    const fetchEmploymentStatusData = useCallback(async () => {
+        await fetchData(
+            async () => {
+                const employmentStatusResponse = await requestEmploymentStatusList();
+                return {
+                    result: employmentStatusResponse.result === "SU" ? "SU" : "FA",
+                    responseData: {
+                        employmentStatusList: sortCode(
+                            employmentStatusResponse.responseData,
+                            "employmentStatusCode",
+                            "asc"
+                        ),
+                    }
+                }
+            },
+            (data) => {
+                setEmploymentStatusList(data.employmentStatusList);
+            }
+        );
+    }, []);
+
     const fetchAttendanceData = useCallback(async (date) => {
         await fetchData(
             () => requestAttendanceList({ commuteDate: date }),
@@ -167,13 +180,26 @@ function Employee() {
         );
     }, []);
 
-    // const fetchAttendanceStatusData = useCallback(async () => {
-    //     await fetchData(
-    //         async () => {
-    //             const attendanceStatusResponse = await requestAttendanceStatusList();
-    //         }   
-    //     );
-    // }, []);
+    const fetchAttendanceStatusData = useCallback(async () => {
+        await fetchData(
+            async () => {
+                const attendanceStatusResponse = await requestAttendanceStatusList();
+                return {
+                    result: attendanceStatusResponse.result === "SU" ? "SU" : "FA",
+                    responseData: {
+                        attendanceStatusList: sortCode(
+                            attendanceStatusResponse.responseData,
+                            "attendanceStatusCode",
+                            "asc"
+                        ),
+                    }
+                }
+            },
+            (data) => {
+                setAttendanceStatusList(data.attendanceStatusList);
+            }
+        );
+    }, []);
 
     useEffect(() => {
         fetchEmployeeData();
@@ -184,8 +210,16 @@ function Employee() {
     }, [fetchClassData]);
 
     useEffect(() => {
+        fetchEmploymentStatusData();
+    }, [fetchEmploymentStatusData]);
+
+    useEffect(() => {
         fetchAttendanceData(yearMonth);
     }, [yearMonth, fetchAttendanceData]);
+
+    useEffect(() => {
+        fetchAttendanceStatusData();
+    }, [fetchAttendanceStatusData]);
 
     useEffect(() => {
         setFilteredEmployeeList(employeeListData);
@@ -196,7 +230,7 @@ function Employee() {
     }, [attendanceList]);
 
     if (loading) {
-        return <div>로딩중...</div>; // 로딩 중일 때 표시
+        return <Loader />; // 로딩 중일 때 표시
     }
 
     return (
@@ -217,6 +251,7 @@ function Employee() {
                 <AttendanceListSearchBox
                     yearMonth={yearMonth}
                     setYearMonth={setYearMonth}
+                    attendanceStatusList={attendanceStatusList}
                 />
             )}
             <Container>

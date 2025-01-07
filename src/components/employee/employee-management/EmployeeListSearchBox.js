@@ -96,10 +96,35 @@ function EmployeeListSearchBox(props) {
                 const selectedKeywords = Object.keys(checkedKeywords).filter(
                     (key) => checkedKeywords[key]
                 );
-                return (
-                    selectedKeywords.includes(employee.className) ||
-                    selectedKeywords.includes(employee.employmentStatusName)
+
+                // 클래스 키워드와 상태 키워드로 나눔
+                const selectedClassNames = selectedKeywords.filter((key) =>
+                    classList.some((cls) => cls.className === key)
                 );
+                const selectedEmploymentStatuses = selectedKeywords.filter(
+                    (key) =>
+                        employmentStatusList.some(
+                            (status) => status.employmentStatusName === key
+                        )
+                );
+
+                const matchesClassName = selectedClassNames.includes(
+                    employee.className
+                );
+                const matchesEmploymentStatus =
+                    selectedEmploymentStatuses.includes(
+                        employee.employmentStatusName
+                    );
+
+                // 교집합(AND 조건) + 합집합(OR 조건)
+                if (
+                    selectedClassNames.length > 0 &&
+                    selectedEmploymentStatuses.length > 0
+                ) {
+                    return matchesClassName && matchesEmploymentStatus;
+                }
+                // 합집합(OR 조건)
+                return matchesClassName || matchesEmploymentStatus;
             }
             return true;
         });
@@ -125,16 +150,17 @@ function EmployeeListSearchBox(props) {
             <Container className="mb-4">
                 {searching && (
                     <Alert variant="primary" className="font-weight-bold h5">
-                        {`${searchOrder === "keyWord"
+                        {`${
+                            searchOrder === "keyWord"
                                 ? "키워드"
                                 : searchOrder === "employeeName"
-                                    ? "이름"
-                                    : searchOrder === "employeeNumber"
-                                        ? "사번"
-                                        : searchOrder === "departmentName"
-                                            ? "부서"
-                                            : ""
-                            }
+                                ? "이름"
+                                : searchOrder === "employeeNumber"
+                                ? "사번"
+                                : searchOrder === "departmentName"
+                                ? "부서"
+                                : ""
+                        }
                      : ${searchWordRef.current.value}`}
                     </Alert>
                 )}
@@ -209,7 +235,7 @@ function EmployeeListSearchBox(props) {
                                             label={keyword.keyWord}
                                             checked={
                                                 checkedKeywords[
-                                                keyword.keyWord
+                                                    keyword.keyWord
                                                 ] || false
                                             }
                                             onChange={() =>

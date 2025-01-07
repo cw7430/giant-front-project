@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { EMPLOYEE_PATH } from "../../../constant/url";
+import Loader from "../../../util/Loader";
 import {
     requestProfile,
     requestClassList,
@@ -105,7 +106,7 @@ function EmployeeProfile() {
     }, [fetchData]);
 
     if (!userProfile) {
-        return <div>로딩중...</div>;
+        return <Loader />;
     }
 
     return (

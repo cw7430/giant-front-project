@@ -10,7 +10,7 @@ import {
 } from "react-bootstrap";
 
 function AttendanceListSearchBox(props) {
-    const { yearMonth, setYearMonth } = props;
+    const { yearMonth, setYearMonth, attendanceStatusList } = props;
 
     const searchWordRef = useRef(null);
 
