@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Nav, Container, Row, Col, Button } from "react-bootstrap";
 import EmployeeListSearchBox from "./employee-management/EmployeeListSearchBox";
@@ -12,6 +12,7 @@ import {
     requestDepartmentList,
     requestTeamList,
     requestAttendanceList,
+    requestAttendanceStatusList,
 } from "../../servers/employServer";
 import { sortCode } from "../../util/sort";
 import AttandanceListTable from "./attendance-management/AttendanceListTable";
@@ -38,6 +39,7 @@ function Employee() {
     const [attendanceList, setAttendanceList] = useState([]);
     const [filteredAttendanceList, setFilteredAttendanceList] =
         useState(attendanceList);
+    const [attendanceStatusList, setAttendanceStatusList] = useState([]);
     const [employmentStatusList, setEmploymentStatusList] = useState([]);
     const [departmentList, setDepartmentList] = useState([]);
     const [teamList, setTeamList] = useState([]);
@@ -69,66 +71,17 @@ function Employee() {
         }
     };
 
-    const fetchData = async () => {
+    const fetchData = async (requestFunc, successCallback) => {
         setLoading(true); // 데이터 요청 시작 시 로딩 상태 설정
         try {
-            const profileListResponse = await requestProfileList();
-            const classResponse = await requestClassList();
-            const employmentStatusResponse =
-                await requestEmploymentStatusList();
-            const departmentResponse = await requestDepartmentList();
-            const teamResponse = await requestTeamList();
-            const attendanceListResponse = await requestAttendanceList({
-                commuteDate: yearMonth,
-            });
+            const response = await requestFunc();
 
-            // 결과 검사
-            if (
-                profileListResponse.result !== "SU" ||
-                classResponse.result !== "SU" ||
-                employmentStatusResponse.result !== "SU" ||
-                departmentResponse.result !== "SU" ||
-                teamResponse.result !== "SU" ||
-                attendanceListResponse.result !== "SU"
-            ) {
+            if (response.result !== "SU") {
                 setAlertTitle("경고");
-                setAlertText("일부 데이터에 오류가 있습니다.");
+                setAlertText("데이터 요청에 실패했습니다.");
                 setShowAlertModal(true);
             } else {
-                // classCode로 오름차순 정렬
-                const sortedClassList = sortCode(
-                    classResponse.responseData,
-                    "classCode",
-                    "asc"
-                );
-
-                // employmentStatusCode로 오름차순 정렬
-                const sortedEmploymentStatusList = sortCode(
-                    employmentStatusResponse.responseData,
-                    "employmentStatusCode",
-                    "asc"
-                );
-
-                // departmentNumber로 오름차순 정렬
-                const sortedDepartmentList = sortCode(
-                    departmentResponse.responseData,
-                    "departmentNumber",
-                    "asc"
-                );
-
-                // teamNumber로 오름차순 정렬
-                const sortedTeamList = sortCode(
-                    teamResponse.responseData,
-                    "teamNumber",
-                    "asc"
-                );
-
-                setEmployeeListData(profileListResponse.responseData);
-                setClassList(sortedClassList);
-                setEmploymentStatusList(sortedEmploymentStatusList);
-                setDepartmentList(sortedDepartmentList);
-                setTeamList(sortedTeamList);
-                setAttendanceList(attendanceListResponse.responseData);
+                successCallback(response.responseData);
             }
         } catch (error) {
             console.error("데이터 요청 중 오류 발생:", error);
@@ -140,9 +93,99 @@ function Employee() {
         }
     };
 
+    const fetchEmployeeData = useCallback(async () => {
+        await fetchData(
+            async () => {
+                const profileListResponse = await requestProfileList();
+                const employmentStatusResponse =
+                    await requestEmploymentStatusList();
+                const departmentResponse = await requestDepartmentList();
+                const teamResponse = await requestTeamList();
+
+                return {
+                    result:
+                        profileListResponse.result === "SU" &&
+                        employmentStatusResponse.result === "SU" &&
+                        departmentResponse.result === "SU" &&
+                        teamResponse.result === "SU"
+                            ? "SU"
+                            : "FA",
+                    responseData: {
+                        profileList: profileListResponse.responseData,
+                        employmentStatusList: sortCode(
+                            employmentStatusResponse.responseData,
+                            "employmentStatusCode",
+                            "asc"
+                        ),
+                        departmentList: sortCode(
+                            departmentResponse.responseData,
+                            "departmentNumber",
+                            "asc"
+                        ),
+                        teamList: sortCode(
+                            teamResponse.responseData,
+                            "teamNumber",
+                            "asc"
+                        ),
+                    },
+                };
+            },
+            (data) => {
+                setEmployeeListData(data.profileList);
+                setEmploymentStatusList(data.employmentStatusList);
+                setDepartmentList(data.departmentList);
+                setTeamList(data.teamList);
+            }
+        );
+    }, []);
+
+    const fetchClassData = useCallback(async () => {
+        await fetchData(
+            async () => {
+                const classResponse = await requestClassList();
+                return {
+                    result: classResponse.result === "SU" ? "SU" : "FA",
+                    responseData: {
+                        classList: sortCode(
+                            classResponse.responseData,
+                            "classCode",
+                            "asc"
+                        ),
+                    },
+                };
+            },
+            (data) => {
+                setClassList(data.classList);
+            }
+        );
+    }, []);
+
+    const fetchAttendanceData = useCallback(async (date) => {
+        await fetchData(
+            () => requestAttendanceList({ commuteDate: date }),
+            setAttendanceList
+        );
+    }, []);
+
+    // const fetchAttendanceStatusData = useCallback(async () => {
+    //     await fetchData(
+    //         async () => {
+    //             const attendanceStatusResponse = await requestAttendanceStatusList();
+    //         }   
+    //     );
+    // }, []);
+
     useEffect(() => {
-        fetchData();
-    }, [navigate]);
+        fetchEmployeeData();
+    }, [fetchEmployeeData]);
+
+    useEffect(() => {
+        fetchClassData();
+    }, [fetchClassData]);
+
+    useEffect(() => {
+        fetchAttendanceData(yearMonth);
+    }, [yearMonth, fetchAttendanceData]);
 
     useEffect(() => {
         setFilteredEmployeeList(employeeListData);
@@ -170,7 +213,12 @@ function Employee() {
                     setEmployeeSort={setEmployeeSort}
                 />
             )}
-            {view === "Attendance" && <AttendanceListSearchBox />}
+            {view === "Attendance" && (
+                <AttendanceListSearchBox
+                    yearMonth={yearMonth}
+                    setYearMonth={setYearMonth}
+                />
+            )}
             <Container>
                 <Row className="justify-content-between">
                     <Col xs={9} className="d-flex">
@@ -238,7 +286,7 @@ function Employee() {
                 classList={classList}
                 departmentList={departmentList}
                 teamList={teamList}
-                updateData={fetchData}
+                updateData={fetchEmployeeData}
             />
         </div>
     );

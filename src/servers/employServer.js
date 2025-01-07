@@ -80,7 +80,17 @@ export const requestAttendanceList = async (request) => {
         console.error("근태 목록 불러오던 중 오류 발생:", error);
         return { result: "SE" };
     }
-}
+};
+
+export const requestAttendanceStatusList = async () => {
+    try {
+        const response = await axios.post(`${DOMAIN}/attendance_status_list`);
+        return response.data;
+    } catch(error) {
+        console.error("근태 상태 목록 불러오던 중 오류 발생:", error);
+        return { result: "SE" };
+    }
+};
 
 export const requestRegisterEmployee = async (request) => {
     try {
