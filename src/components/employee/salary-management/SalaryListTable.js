@@ -8,6 +8,7 @@ function SalaryListTable() {
                     <Table bordered hover>
                         <thead className="table-dark">
                             <tr>
+                                <th>{"번호"}</th>
                                 <th>{"사번"}</th>
                                 <th>{"이름"}</th>
                                 <th>{"출근일수"}</th>
@@ -19,6 +20,7 @@ function SalaryListTable() {
                         </thead>
                         <tbody>
                             <tr>
+                                <td>{""}</td>
                                 <td>{""}</td>
                                 <td>{""}</td>
                                 <td>{""}</td>

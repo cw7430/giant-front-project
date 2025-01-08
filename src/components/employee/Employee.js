@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Nav, Container, Row, Col, Button } from "react-bootstrap";
 import Loader from "../../util/Loader";
 import EmployeeListSearchBox from "./employee-management/EmployeeListSearchBox";
 import EmployeeListTable from "./employee-management/EmployeeListTable";
 import AlertModal from "../modals/AlertModal";
+import EmployeeSelectModal from "./EmployeeSelectModal";
 import RegisterEmployeeModal from "./employee-management/RegisterEmployeeModal";
 import {
     requestProfileList,
@@ -26,7 +26,6 @@ function Employee() {
         now.getMonth() + 1
     ).padStart(2, "0")}`;
 
-    const navigate = useNavigate();
     const [yearMonth, setYearMonth] = useState(currentYearMonth);
     const [loading, setLoading] = useState(true);
     const [showAlertModal, setShowAlertModal] = useState(false);
@@ -44,9 +43,13 @@ function Employee() {
     const [departmentList, setDepartmentList] = useState([]);
     const [teamList, setTeamList] = useState([]);
     const [attendanceStatusList, setAttendanceStatusList] = useState([]);
+
     const [showRegisterModal, setShowRegisterModal] = useState(false);
+    const [showEmployeeSelectModal, setShowEmployeeSelectModal] =
+        useState(false);
 
     const [employeeSort, setEmployeeSort] = useState("employeeNumberAsc");
+    const [attendanceSort, setAttendanceSort] = useState("idAsc");
 
     const handleCloseAlertModal = () => setShowAlertModal(false);
 
@@ -54,21 +57,28 @@ function Employee() {
         setView(selectedView);
     };
 
-    const handleShowRegisterModal = () => {
+    const handleShowRegisterModal = () => setShowRegisterModal(true);
+
+    const handleCloseRegisterModal = () => setShowRegisterModal(false);
+
+    const handleShowEmployeeSelectModal = () =>
+        setShowEmployeeSelectModal(true);
+
+    const handleCloseEmployeeSelectModal = () =>
+        setShowEmployeeSelectModal(false);
+
+    const toggleRegisterButton = () => {
         const authorityCode = sessionStorage.getItem("authorityCode");
         if (authorityCode === "AUT01" || authorityCode === "AUT02") {
-            setShowRegisterModal(true);
+            if (view === "List") {
+                handleShowRegisterModal();
+            } else {
+                handleShowEmployeeSelectModal();
+            }
         } else {
             setAlertTitle("경고");
             setAlertText("접근 권한이 없습니다. 관리자에게 문의바랍니다.");
             setShowAlertModal(true);
-        }
-    };
-    const handleCloseRegisterModal = () => setShowRegisterModal(false);
-
-    const toggleRegisterButton = () => {
-        if (view === "List") {
-            handleShowRegisterModal();
         }
     };
 
@@ -155,17 +165,19 @@ function Employee() {
     const fetchEmploymentStatusData = useCallback(async () => {
         await fetchData(
             async () => {
-                const employmentStatusResponse = await requestEmploymentStatusList();
+                const employmentStatusResponse =
+                    await requestEmploymentStatusList();
                 return {
-                    result: employmentStatusResponse.result === "SU" ? "SU" : "FA",
+                    result:
+                        employmentStatusResponse.result === "SU" ? "SU" : "FA",
                     responseData: {
                         employmentStatusList: sortCode(
                             employmentStatusResponse.responseData,
                             "employmentStatusCode",
                             "asc"
                         ),
-                    }
-                }
+                    },
+                };
             },
             (data) => {
                 setEmploymentStatusList(data.employmentStatusList);
@@ -174,26 +186,37 @@ function Employee() {
     }, []);
 
     const fetchAttendanceData = useCallback(async (date) => {
-        await fetchData(
-            () => requestAttendanceList({ commuteDate: date }),
-            setAttendanceList
-        );
+        await fetchData(async () => {
+            const result = await requestAttendanceList({ commuteDate: date });
+            if (result?.responseData) {
+                // 각 객체에 id 추가
+                result.responseData = result.responseData.map(
+                    (item, index) => ({
+                        ...item,
+                        id: index + 1, // 1부터 시작하는 id 부여
+                    })
+                );
+            }
+            return result;
+        }, setAttendanceList);
     }, []);
 
     const fetchAttendanceStatusData = useCallback(async () => {
         await fetchData(
             async () => {
-                const attendanceStatusResponse = await requestAttendanceStatusList();
+                const attendanceStatusResponse =
+                    await requestAttendanceStatusList();
                 return {
-                    result: attendanceStatusResponse.result === "SU" ? "SU" : "FA",
+                    result:
+                        attendanceStatusResponse.result === "SU" ? "SU" : "FA",
                     responseData: {
                         attendanceStatusList: sortCode(
                             attendanceStatusResponse.responseData,
                             "attendanceStatusCode",
                             "asc"
                         ),
-                    }
-                }
+                    },
+                };
             },
             (data) => {
                 setAttendanceStatusList(data.attendanceStatusList);
@@ -251,7 +274,10 @@ function Employee() {
                 <AttendanceListSearchBox
                     yearMonth={yearMonth}
                     setYearMonth={setYearMonth}
+                    attendanceList={attendanceList}
+                    setFilteredAttendanceList={setFilteredAttendanceList}
                     attendanceStatusList={attendanceStatusList}
+                    setAttendanceSort={setAttendanceSort}
                 />
             )}
             <Container>
@@ -304,7 +330,9 @@ function Employee() {
             {view === "Attendance" && (
                 <AttandanceListTable
                     filteredAttendanceList={filteredAttendanceList}
-                    setFilteredEmployeeList={setFilteredEmployeeList}
+                    setFilteredAttendanceList={setFilteredAttendanceList}
+                    attendanceSort={attendanceSort}
+                    setAttendanceSort={setAttendanceSort}
                 />
             )}
             {view === "Salary" && <SalaryListTable />}
@@ -314,6 +342,11 @@ function Employee() {
                 handleCloseAlertModal={handleCloseAlertModal}
                 alertTitle={alertTitle}
                 alertText={alertText}
+            />
+            <EmployeeSelectModal
+                view={view}
+                showEmployeeSelectModal={showEmployeeSelectModal}
+                handleCloseEmployeeSelectModal={handleCloseEmployeeSelectModal}
             />
             <RegisterEmployeeModal
                 showRegisterModal={showRegisterModal}

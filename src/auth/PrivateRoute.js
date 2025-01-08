@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MAIN_PATH } from "../constant/url";
+import Loader from "../util/Loader";
 import AlertModal from "../components/modals/AlertModal";
 
 function PrivateRoute(props) {
@@ -21,7 +22,7 @@ function PrivateRoute(props) {
 
     return (
         <>
-            {isLogin ? children : null}
+            {isLogin ? children : <Loader />}
             {/* 로그인 상태일 때만 children을 렌더링 */}
             <AlertModal
                 showAlertModal={showAlertModal}

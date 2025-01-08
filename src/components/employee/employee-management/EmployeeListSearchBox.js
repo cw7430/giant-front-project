@@ -37,9 +37,6 @@ function EmployeeListSearchBox(props) {
         const selectedValue = event.target.value;
         setSearchOrder(selectedValue);
         setReadOnly(selectedValue === "keyWord");
-        searchWordRef.current.value = "";
-        setCheckedKeywords({});
-        setAllIncluded(false);
         handleReset();
     };
 

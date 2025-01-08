@@ -23,6 +23,20 @@ export const sortCode = (list, key, order = 'asc') => {
     });
 };
 
+export const sortNumber = (list, key, order = 'asc') => {
+    return list.sort((a, b) => {
+        // null 또는 undefined 체크 (항상 맨 아래로 보냄)
+        if (a[key] == null && b[key] == null) return 0; // 둘 다 null 또는 undefined인 경우 위치 변경 없음
+        if (a[key] == null) return 1; // a가 null 또는 undefined면 뒤로
+        if (b[key] == null) return -1; // b가 null 또는 undefined면 뒤로
+
+        // 숫자 비교
+        return order === 'asc'
+            ? a[key] - b[key]
+            : b[key] - a[key];
+    });
+};
+
 export const sortDate = (list, key, order = 'asc') => {
     return list.sort((a, b) => {
         // null 또는 undefined 체크 (항상 맨 아래로 보냄)
