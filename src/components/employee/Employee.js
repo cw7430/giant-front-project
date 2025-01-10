@@ -6,6 +6,7 @@ import EmployeeListTable from "./employee-management/EmployeeListTable";
 import AlertModal from "../modals/AlertModal";
 import EmployeeSelectModal from "./EmployeeSelectModal";
 import RegisterEmployeeModal from "./employee-management/RegisterEmployeeModal";
+import AttendanceBulkModal from "./attendance-management/AttendanceBulkModal";
 import {
     requestProfileList,
     requestClassList,
@@ -35,6 +36,7 @@ function Employee() {
     const [employeeListData, setEmployeeListData] = useState([]);
     const [filteredEmployeeList, setFilteredEmployeeList] =
         useState(employeeListData);
+    const [existingEmployeeList, setExistingEmployeeList] = useState([]);
     const [classList, setClassList] = useState([]);
     const [attendanceList, setAttendanceList] = useState([]);
     const [filteredAttendanceList, setFilteredAttendanceList] =
@@ -47,6 +49,7 @@ function Employee() {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
     const [showEmployeeSelectModal, setShowEmployeeSelectModal] =
         useState(false);
+    const [showAttendanceBukModal, setShowAttendanceBukModal] = useState(false);
 
     const [employeeSort, setEmployeeSort] = useState("employeeNumberAsc");
     const [attendanceSort, setAttendanceSort] = useState("idAsc");
@@ -66,6 +69,11 @@ function Employee() {
 
     const handleCloseEmployeeSelectModal = () =>
         setShowEmployeeSelectModal(false);
+
+    const handleShowAttendanceBukModal = () => setShowAttendanceBukModal(true);
+
+    const handleCloseAttendanceBukModal = () =>
+        setShowAttendanceBukModal(false);
 
     const toggleRegisterButton = () => {
         const authorityCode = sessionStorage.getItem("authorityCode");
@@ -135,6 +143,14 @@ function Employee() {
             },
             (data) => {
                 setEmployeeListData(data.profileList);
+                // existingEmployeeList에 employmentStatusCode가 "EST01"인 항목 추가
+                const filteredExistingEmployees = data.profileList.filter(
+                    (employee) => employee.employmentStatusCode === "EST01"
+                );
+                setExistingEmployeeList((prevList) => [
+                    ...prevList,
+                    ...filteredExistingEmployees,
+                ]);
                 setDepartmentList(data.departmentList);
                 setTeamList(data.teamList);
             }
@@ -347,6 +363,7 @@ function Employee() {
                 view={view}
                 showEmployeeSelectModal={showEmployeeSelectModal}
                 handleCloseEmployeeSelectModal={handleCloseEmployeeSelectModal}
+                handleShowAttendanceBukModal={handleShowAttendanceBukModal}
             />
             <RegisterEmployeeModal
                 showRegisterModal={showRegisterModal}
@@ -355,6 +372,13 @@ function Employee() {
                 departmentList={departmentList}
                 teamList={teamList}
                 updateData={fetchEmployeeData}
+            />
+            <AttendanceBulkModal
+                showAttendanceBukModal={showAttendanceBukModal}
+                handleCloseAttendanceBukModal={handleCloseAttendanceBukModal}
+                attendanceStatusList={attendanceStatusList}
+                existingEmployeeList={existingEmployeeList}
+                classList={classList}
             />
         </div>
     );

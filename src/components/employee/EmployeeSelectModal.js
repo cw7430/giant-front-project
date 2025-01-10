@@ -1,7 +1,13 @@
 import { Modal, Button, Container, Row, Col } from "react-bootstrap";
 
 function EmployeeSelectModal(props) {
-    const { view, showEmployeeSelectModal, handleCloseEmployeeSelectModal } = props;
+    const { view, showEmployeeSelectModal, handleCloseEmployeeSelectModal, handleShowAttendanceBukModal } = props;
+    
+    const toggleBulkButton = () => {
+        if(view === "Attendance") handleShowAttendanceBukModal();
+        handleCloseEmployeeSelectModal();
+    }
+    
     return (
         <Modal
             backdrop="static"
@@ -18,7 +24,7 @@ function EmployeeSelectModal(props) {
                             <Button variant="primary">{"개별등록"}</Button>
                         </Col>
                         <Col xs="auto">
-                            <Button variant="secondary">{"일괄등록"}</Button>
+                            <Button variant="secondary" onClick={toggleBulkButton}>{"일괄등록"}</Button>
                         </Col>
                     </Row>
                 </Container>

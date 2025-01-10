@@ -1,5 +1,5 @@
 export const sortCode = (list, key, order = 'asc') => {
-    return list.sort((a, b) => {
+    return [...list].sort((a, b) => {
         const regex = /([a-zA-Z]+)(\d+)/;
 
         // null 또는 undefined 체크 (항상 맨 아래로 보냄)
@@ -24,7 +24,7 @@ export const sortCode = (list, key, order = 'asc') => {
 };
 
 export const sortNumber = (list, key, order = 'asc') => {
-    return list.sort((a, b) => {
+    return [...list].sort((a, b) => {
         // null 또는 undefined 체크 (항상 맨 아래로 보냄)
         if (a[key] == null && b[key] == null) return 0; // 둘 다 null 또는 undefined인 경우 위치 변경 없음
         if (a[key] == null) return 1; // a가 null 또는 undefined면 뒤로
@@ -38,7 +38,7 @@ export const sortNumber = (list, key, order = 'asc') => {
 };
 
 export const sortDate = (list, key, order = 'asc') => {
-    return list.sort((a, b) => {
+    return [...list].sort((a, b) => {
         // null 또는 undefined 체크 (항상 맨 아래로 보냄)
         if (!a[key] && !b[key]) return 0; // 둘 다 null인 경우 위치 변경 없음
         if (!a[key]) return 1; // a가 null이면 뒤로
