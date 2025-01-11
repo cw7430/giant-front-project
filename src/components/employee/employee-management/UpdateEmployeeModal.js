@@ -321,7 +321,7 @@ function UpdateEmployeeModal(props) {
                     </Form.Group>
                     {updateError && (
                         <Form.Group className="mb-3">
-                            <Form.Text>{updateErrorMessage}</Form.Text>
+                            <Form.Text className="text-danger">{updateErrorMessage}</Form.Text>
                         </Form.Group>
                     )}
                 </Modal.Body>

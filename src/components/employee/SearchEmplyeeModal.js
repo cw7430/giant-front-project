@@ -7,8 +7,13 @@ import {
     Row,
     Col,
     Table,
+    Badge,
 } from "react-bootstrap";
 import CustomPagination from "../../util/CustomPagination";
+import CaretUp from "../../assets/svg/CaretUp";
+import CaretUpFill from "../../assets/svg/CaretUpFill";
+import CaretDown from "../../assets/svg/CaretDown";
+import CaretDownFill from "../../assets/svg/CaretDownFill";
 import { sortCode } from "../../util/sort";
 
 function SearchEmployeeModal(props) {
@@ -16,20 +21,21 @@ function SearchEmployeeModal(props) {
         view,
         showSearchEmployeeModal,
         handleCloseSearchEmployeeModal,
-        filteredEmployeeList,
-        setFilteredEmployeeList,
+        existingEmployeeList,
         exceptedEmployeeList,
         setExceptedEmployeeList,
         classList,
     } = props;
 
     const sortedClassList = sortCode(classList, "classCode", "desc");
-    const [searchedData, setSearchedData] = useState(filteredEmployeeList);
-    const [pagedData, setPagedData] = useState(searchedData);
+    const [filteredEmployeeList, setFilteredEmployeeList] =
+        useState(existingEmployeeList);
+    const [pagedData, setPagedData] = useState(filteredEmployeeList);
     const [searching, setSearching] = useState(false);
     const [searchOrder, setSearchOrder] = useState("employeeName");
     const [searchWord, setSearchWord] = useState("");
     const [selectedClass, setSelectedClass] = useState("");
+    const [employeeSort, setEmployeeSort] = useState("employeeNumberAsc");
 
     const handleSearchOrderChange = (event) => {
         const selectedValue = event.target.value;
@@ -42,21 +48,114 @@ function SearchEmployeeModal(props) {
         setSelectedClass(selectedCode);
     };
 
+    const handleSearch = () => {
+        setEmployeeSort("employeeNumberAsc");
+        setFilteredEmployeeList(existingEmployeeList);
+        setSearching(true);
+
+        const filteredList = existingEmployeeList.filter((employee) => {
+            if (searchOrder === "employeeName") {
+                return employee.employeeName
+                    .toLowerCase()
+                    .includes(searchWord.toLowerCase());
+            }
+            if (searchOrder === "employeeNumber") {
+                return employee.employeeNumber
+                    .toLowerCase()
+                    .includes(searchWord.toLowerCase());
+            }
+            if (searchOrder === "departmentName") {
+                return employee.departmentName
+                    .toLowerCase()
+                    .includes(searchWord.toLowerCase());
+            }
+            if (searchOrder === "class") {
+                return employee.classCode === selectedClass;
+            }
+            return true;
+        });
+        setFilteredEmployeeList(filteredList);
+    };
+
+    const handleSearchKeyDown = (event) => {
+        if (event.key !== "Enter") return;
+        handleSearch();
+    };
+
+    const handleSortChange = (sortKey) => {
+        setEmployeeSort(sortKey);
+
+        let sortedList = [];
+        switch (sortKey) {
+            case "employeeNumberAsc":
+                sortedList = sortCode(
+                    [...filteredEmployeeList],
+                    "employeeNumber",
+                    "asc"
+                );
+                break;
+            case "employeeNumberDesc":
+                sortedList = sortCode(
+                    [...filteredEmployeeList],
+                    "employeeNumber",
+                    "desc"
+                );
+                break;
+            case "departmentNumberAsc":
+                sortedList = sortCode(
+                    [...filteredEmployeeList],
+                    "departmentNumber",
+                    "asc"
+                );
+                break;
+            case "departmentNumberDesc":
+                sortedList = sortCode(
+                    [...filteredEmployeeList],
+                    "departmentNumber",
+                    "desc"
+                );
+                break;
+            case "classCodeAsc":
+                sortedList = sortCode(
+                    [...filteredEmployeeList],
+                    "classCode",
+                    "asc"
+                );
+                break;
+            case "classCodeDesc":
+                sortedList = sortCode(
+                    [...filteredEmployeeList],
+                    "classCode",
+                    "desc"
+                );
+                break;
+            default:
+                sortedList = sortCode(
+                    [...filteredEmployeeList],
+                    "employeeNumber",
+                    "asc"
+                );
+        }
+
+        setFilteredEmployeeList(sortedList); // 상태 업데이트
+    };
+
     const handleReset = () => {
+        setEmployeeSort("employeeNumberAsc");
         setSearching(false);
         setSearchOrder("employeeName");
         setSearchWord("");
-        setSearchedData(filteredEmployeeList);
+        setFilteredEmployeeList(existingEmployeeList);
         if (sortedClassList.length > 0) {
             setSelectedClass(sortedClassList[0].classCode); // 초기값 설정
         }
     };
 
     useEffect(() => {
-        if (showSearchEmployeeModal) {
-            // 모달이 열릴 때 초기화
+        if (!showSearchEmployeeModal) {
             handleReset();
         }
+        setFilteredEmployeeList(existingEmployeeList);
     }, [showSearchEmployeeModal]);
 
     return (
@@ -69,6 +168,78 @@ function SearchEmployeeModal(props) {
                 <Modal.Title>{"사원검색"}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
+                <Row className="mb-3">
+                    <Col className="mb-1" xs={2}>
+                        <Badge pill bg="dark">
+                            {"EMP001"}
+                            <button className="icon-button">
+                                <Form.Text className="text-warning">
+                                    {"X"}
+                                </Form.Text>
+                            </button>
+                        </Badge>
+                    </Col>
+                    <Col className="mb-1" xs={2}>
+                        <Badge pill bg="dark">
+                            {"EMP001"}
+                            <button className="icon-button">
+                                <Form.Text className="text-warning">
+                                    {"X"}
+                                </Form.Text>
+                            </button>
+                        </Badge>
+                    </Col>
+                    <Col className="mb-1" xs={2}>
+                        <Badge pill bg="dark">
+                            {"EMP001"}
+                            <button className="icon-button">
+                                <Form.Text className="text-warning">
+                                    {"X"}
+                                </Form.Text>
+                            </button>
+                        </Badge>
+                    </Col>
+                    <Col className="mb-1" xs={2}>
+                        <Badge pill bg="dark">
+                            {"EMP001"}
+                            <button className="icon-button">
+                                <Form.Text className="text-warning">
+                                    {"X"}
+                                </Form.Text>
+                            </button>
+                        </Badge>
+                    </Col>
+                    <Col className="mb-1" xs={2}>
+                        <Badge pill bg="dark">
+                            {"EMP001"}
+                            <button className="icon-button">
+                                <Form.Text className="text-warning">
+                                    {"X"}
+                                </Form.Text>
+                            </button>
+                        </Badge>
+                    </Col>
+                    <Col className="mb-1" xs={2}>
+                        <Badge pill bg="dark">
+                            {"EMP001"}
+                            <button className="icon-button">
+                                <Form.Text className="text-warning">
+                                    {"X"}
+                                </Form.Text>
+                            </button>
+                        </Badge>
+                    </Col>
+                    <Col className="mb-1" xs={2}>
+                        <Badge pill bg="dark">
+                            {"EMP001"}
+                            <button className="icon-button">
+                                <Form.Text className="text-warning">
+                                    {"X"}
+                                </Form.Text>
+                            </button>
+                        </Badge>
+                    </Col>
+                </Row>
                 <Form.Group className="mb-3">
                     <Row className="mt-3">
                         <InputGroup>
@@ -89,7 +260,7 @@ function SearchEmployeeModal(props) {
                                     <option value="class">{"직급"}</option>
                                 </Form.Select>
                             </Col>
-                            <Col xs={6}>
+                            <Col xs={5}>
                                 {searchOrder !== "class" && (
                                     <Form.Control
                                         type="text"
@@ -97,6 +268,7 @@ function SearchEmployeeModal(props) {
                                         onChange={(e) =>
                                             setSearchWord(e.target.value)
                                         }
+                                        onKeyDown={handleSearchKeyDown}
                                     />
                                 )}
                                 {searchOrder === "class" && (
@@ -117,10 +289,15 @@ function SearchEmployeeModal(props) {
                                 )}
                             </Col>
                             <Col xs={2}>
-                                <Button variant="primary">{"검색"}</Button>
+                                <Button
+                                    variant="primary"
+                                    onClick={handleSearch}
+                                >
+                                    {"검색"}
+                                </Button>
                             </Col>
                             {searching && ( // 검색 중일 때만 초기화 버튼 보여줌
-                                <Col xs={1}>
+                                <Col xs={2}>
                                     <Button
                                         variant="danger"
                                         onClick={handleReset}
@@ -137,10 +314,103 @@ function SearchEmployeeModal(props) {
                         <Table bordered hover>
                             <thead className="table-dark">
                                 <tr>
-                                    <th>{"사번"}</th>
+                                    <th>
+                                        {"사번"}
+                                        <button
+                                            className="icon-button"
+                                            onClick={() =>
+                                                handleSortChange(
+                                                    "employeeNumberAsc"
+                                                )
+                                            }
+                                        >
+                                            {employeeSort ===
+                                            "employeeNumberAsc" ? (
+                                                <CaretUpFill />
+                                            ) : (
+                                                <CaretUp />
+                                            )}
+                                        </button>
+                                        <button
+                                            className="icon-button"
+                                            onClick={() =>
+                                                handleSortChange(
+                                                    "employeeNumberDesc"
+                                                )
+                                            }
+                                        >
+                                            {employeeSort ===
+                                            "employeeNumberDesc" ? (
+                                                <CaretDownFill />
+                                            ) : (
+                                                <CaretDown />
+                                            )}
+                                        </button>
+                                    </th>
                                     <th>{"이름"}</th>
-                                    <th>{"부서"}</th>
-                                    <th>{"직급"}</th>
+                                    <th>
+                                        {"부서"}
+                                        <button
+                                            className="icon-button"
+                                            onClick={() =>
+                                                handleSortChange(
+                                                    "departmentNumberAsc"
+                                                )
+                                            }
+                                        >
+                                            {employeeSort ===
+                                            "departmentNumberAsc" ? (
+                                                <CaretUpFill />
+                                            ) : (
+                                                <CaretUp />
+                                            )}
+                                        </button>
+                                        <button
+                                            className="icon-button"
+                                            onClick={() =>
+                                                handleSortChange(
+                                                    "departmentNumberDesc"
+                                                )
+                                            }
+                                        >
+                                            {employeeSort ===
+                                            "departmentNumberDesc" ? (
+                                                <CaretDownFill />
+                                            ) : (
+                                                <CaretDown />
+                                            )}
+                                        </button>
+                                    </th>
+                                    <th>
+                                        {"직급"}
+                                        <button
+                                            className="icon-button"
+                                            onClick={() =>
+                                                handleSortChange("classCodeAsc")
+                                            }
+                                        >
+                                            {employeeSort === "classCodeAsc" ? (
+                                                <CaretUpFill />
+                                            ) : (
+                                                <CaretUp />
+                                            )}
+                                        </button>
+                                        <button
+                                            className="icon-button"
+                                            onClick={() =>
+                                                handleSortChange(
+                                                    "classCodeDesc"
+                                                )
+                                            }
+                                        >
+                                            {employeeSort ===
+                                            "classCodeDesc" ? (
+                                                <CaretDownFill />
+                                            ) : (
+                                                <CaretDown />
+                                            )}
+                                        </button>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -171,12 +441,6 @@ function SearchEmployeeModal(props) {
                 </Row>
             </Modal.Body>
             <Modal.Footer>
-                <Button
-                    variant="success"
-                    onClick={handleCloseSearchEmployeeModal}
-                >
-                    {"등록"}
-                </Button>
                 <Button
                     variant="danger"
                     onClick={handleCloseSearchEmployeeModal}

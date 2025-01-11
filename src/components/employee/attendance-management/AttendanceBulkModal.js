@@ -11,7 +11,6 @@ function AttendanceBulkModal(props) {
         classList,
     } = props;
 
-    const [filteredEmployeeList, setFilteredEmployeeList] = useState(existingEmployeeList);
     const [showSearchEmployeeModal, setShowSearchEmployeeModal] =
         useState(false);
     const [exceptedEmployeeList, setExceptedEmployeeList] = useState([]);
@@ -25,7 +24,6 @@ function AttendanceBulkModal(props) {
     useEffect(() => {
         if (!showAttendanceBukModal) {
             setExceptedEmployeeList([]);
-            setFilteredEmployeeList(existingEmployeeList);
         }
     }, [showAttendanceBukModal]);
 
@@ -76,8 +74,6 @@ function AttendanceBulkModal(props) {
                 showSearchEmployeeModal={showSearchEmployeeModal}
                 handleCloseSearchEmployeeModal={handleCloseSearchEmployeeModal}
                 existingEmployeeList={existingEmployeeList}
-                filteredEmployeeList={filteredEmployeeList}
-                setFilteredEmployeeList={setFilteredEmployeeList}
                 exceptedEmployeeList={exceptedEmployeeList}
                 setExceptedEmployeeList={setExceptedEmployeeList}
                 classList={classList}

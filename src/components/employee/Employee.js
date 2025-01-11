@@ -57,6 +57,10 @@ function Employee() {
     const handleCloseAlertModal = () => setShowAlertModal(false);
 
     const handleSelectView = (selectedView) => {
+        setFilteredEmployeeList(employeeListData);
+        setFilteredAttendanceList(attendanceList);
+        setEmployeeSort("employeeNumberAsc");
+        setAttendanceSort("idAsc");
         setView(selectedView);
     };
 
@@ -72,8 +76,10 @@ function Employee() {
 
     const handleShowAttendanceBukModal = () => setShowAttendanceBukModal(true);
 
-    const handleCloseAttendanceBukModal = () =>
+    const handleCloseAttendanceBukModal = () => {
+        setFilteredEmployeeList(existingEmployeeList);
         setShowAttendanceBukModal(false);
+    };
 
     const toggleRegisterButton = () => {
         const authorityCode = sessionStorage.getItem("authorityCode");
@@ -147,10 +153,7 @@ function Employee() {
                 const filteredExistingEmployees = data.profileList.filter(
                     (employee) => employee.employmentStatusCode === "EST01"
                 );
-                setExistingEmployeeList((prevList) => [
-                    ...prevList,
-                    ...filteredExistingEmployees,
-                ]);
+                setExistingEmployeeList(filteredExistingEmployees);
                 setDepartmentList(data.departmentList);
                 setTeamList(data.teamList);
             }

@@ -217,7 +217,7 @@ function DepartmentUpdateModal(props) {
                     </Form.Group>
                     {teamError && (
                         <Form.Group className="mb-3">
-                            <Form.Text>{teamErrorMessage}</Form.Text>
+                            <Form.Text className="text-danger">{teamErrorMessage}</Form.Text>
                         </Form.Group>
                     )}
                     <Form.Group className="mb-3">
@@ -263,7 +263,7 @@ function DepartmentUpdateModal(props) {
                     </Form.Group>
                     {positionError && (
                         <Form.Group className="mb-3">
-                            <Form.Text>{positionErrorMessage}</Form.Text>
+                            <Form.Text className="text-danger">{positionErrorMessage}</Form.Text>
                         </Form.Group>
                     )}
                 </Modal.Body>
