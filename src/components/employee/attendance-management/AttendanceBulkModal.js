@@ -1,6 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import { Modal, Form, Button, InputGroup, Row, Col } from "react-bootstrap";
+import {
+    Modal,
+    Form,
+    Button,
+    InputGroup,
+    Row,
+    Col,
+    Badge,
+} from "react-bootstrap";
 import SearchEmployeeModal from "../SearchEmplyeeModal";
+import { SingleDatePicker } from "../../../util/CustomDatePicker";
 
 function AttendanceBulkModal(props) {
     const {
@@ -20,6 +29,12 @@ function AttendanceBulkModal(props) {
 
     const handleCloseSearchEmployeeModal = () =>
         setShowSearchEmployeeModal(false);
+
+    const handleBadgeRemove = (employeeNumber) => {
+        setExceptedEmployeeList(
+            exceptedEmployeeList.filter((num) => num !== employeeNumber)
+        );
+    };
 
     useEffect(() => {
         if (!showAttendanceBukModal) {
@@ -53,6 +68,26 @@ function AttendanceBulkModal(props) {
                             </Col>
                         </InputGroup>
                     </Row>
+                    <Row className="mt-3">
+                        {exceptedEmployeeList.map((employeeNumber) => (
+                            <Col className="mb-1" xs={2} key={employeeNumber}>
+                                <Badge pill bg="dark">
+                                    {employeeNumber}
+                                    <button
+                                        className="icon-button"
+                                        onClick={() =>
+                                            handleBadgeRemove(employeeNumber)
+                                        }
+                                    >
+                                        <Form.Text className="text-warning">
+                                            {"X"}
+                                        </Form.Text>
+                                    </button>
+                                </Badge>
+                            </Col>
+                        ))}
+                    </Row>
+                    <SingleDatePicker />
                 </Modal.Body>
                 <Modal.Footer>
                     <Button
@@ -74,8 +109,8 @@ function AttendanceBulkModal(props) {
                 showSearchEmployeeModal={showSearchEmployeeModal}
                 handleCloseSearchEmployeeModal={handleCloseSearchEmployeeModal}
                 existingEmployeeList={existingEmployeeList}
-                exceptedEmployeeList={exceptedEmployeeList}
-                setExceptedEmployeeList={setExceptedEmployeeList}
+                selectedEmployeeList={exceptedEmployeeList}
+                setSelectedEmployeeList={setExceptedEmployeeList}
                 classList={classList}
             />
         </>

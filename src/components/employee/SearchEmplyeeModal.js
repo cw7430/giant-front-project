@@ -22,8 +22,8 @@ function SearchEmployeeModal(props) {
         showSearchEmployeeModal,
         handleCloseSearchEmployeeModal,
         existingEmployeeList,
-        exceptedEmployeeList,
-        setExceptedEmployeeList,
+        selectedEmployeeList,
+        setSelectedEmployeeList,
         classList,
     } = props;
 
@@ -151,6 +151,29 @@ function SearchEmployeeModal(props) {
         }
     };
 
+    const handleRowClick = (employeeNumber) => {
+        if (view === "bulk") {
+            if (selectedEmployeeList.includes(employeeNumber)) {
+                // 이미 선택된 항목이면 제거
+                setSelectedEmployeeList(
+                    selectedEmployeeList.filter((num) => num !== employeeNumber)
+                );
+            } else {
+                // 선택되지 않은 항목이면 추가
+                setSelectedEmployeeList([
+                    ...selectedEmployeeList,
+                    employeeNumber,
+                ]);
+            }
+        }
+    };
+
+    const handleBadgeRemove = (employeeNumber) => {
+        setSelectedEmployeeList(
+            selectedEmployeeList.filter((num) => num !== employeeNumber)
+        );
+    };
+
     useEffect(() => {
         if (!showSearchEmployeeModal) {
             handleReset();
@@ -169,76 +192,23 @@ function SearchEmployeeModal(props) {
             </Modal.Header>
             <Modal.Body>
                 <Row className="mb-3">
-                    <Col className="mb-1" xs={2}>
-                        <Badge pill bg="dark">
-                            {"EMP001"}
-                            <button className="icon-button">
-                                <Form.Text className="text-warning">
-                                    {"X"}
-                                </Form.Text>
-                            </button>
-                        </Badge>
-                    </Col>
-                    <Col className="mb-1" xs={2}>
-                        <Badge pill bg="dark">
-                            {"EMP001"}
-                            <button className="icon-button">
-                                <Form.Text className="text-warning">
-                                    {"X"}
-                                </Form.Text>
-                            </button>
-                        </Badge>
-                    </Col>
-                    <Col className="mb-1" xs={2}>
-                        <Badge pill bg="dark">
-                            {"EMP001"}
-                            <button className="icon-button">
-                                <Form.Text className="text-warning">
-                                    {"X"}
-                                </Form.Text>
-                            </button>
-                        </Badge>
-                    </Col>
-                    <Col className="mb-1" xs={2}>
-                        <Badge pill bg="dark">
-                            {"EMP001"}
-                            <button className="icon-button">
-                                <Form.Text className="text-warning">
-                                    {"X"}
-                                </Form.Text>
-                            </button>
-                        </Badge>
-                    </Col>
-                    <Col className="mb-1" xs={2}>
-                        <Badge pill bg="dark">
-                            {"EMP001"}
-                            <button className="icon-button">
-                                <Form.Text className="text-warning">
-                                    {"X"}
-                                </Form.Text>
-                            </button>
-                        </Badge>
-                    </Col>
-                    <Col className="mb-1" xs={2}>
-                        <Badge pill bg="dark">
-                            {"EMP001"}
-                            <button className="icon-button">
-                                <Form.Text className="text-warning">
-                                    {"X"}
-                                </Form.Text>
-                            </button>
-                        </Badge>
-                    </Col>
-                    <Col className="mb-1" xs={2}>
-                        <Badge pill bg="dark">
-                            {"EMP001"}
-                            <button className="icon-button">
-                                <Form.Text className="text-warning">
-                                    {"X"}
-                                </Form.Text>
-                            </button>
-                        </Badge>
-                    </Col>
+                    {selectedEmployeeList.map((employeeNumber) => (
+                        <Col className="mb-1" xs={2} key={employeeNumber}>
+                            <Badge pill bg="dark">
+                                {employeeNumber}
+                                <button
+                                    className="icon-button"
+                                    onClick={() =>
+                                        handleBadgeRemove(employeeNumber)
+                                    }
+                                >
+                                    <Form.Text className="text-warning">
+                                        {"X"}
+                                    </Form.Text>
+                                </button>
+                            </Badge>
+                        </Col>
+                    ))}
                 </Row>
                 <Form.Group className="mb-3">
                     <Row className="mt-3">
@@ -416,8 +386,20 @@ function SearchEmployeeModal(props) {
                             <tbody>
                                 {pagedData.map((employee) => (
                                     <tr
+                                        className={
+                                            selectedEmployeeList.includes(
+                                                employee.employeeNumber
+                                            )
+                                                ? "table-secondary"
+                                                : "table-default"
+                                        }
                                         key={employee.employeeNumber}
                                         style={{ cursor: "pointer" }}
+                                        onClick={() =>
+                                            handleRowClick(
+                                                employee.employeeNumber
+                                            )
+                                        }
                                     >
                                         <td>{employee.employeeNumber}</td>
                                         <td>{employee.employeeName}</td>

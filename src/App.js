@@ -1,5 +1,6 @@
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "react-datepicker/dist/react-datepicker.css";
 import { Route, Routes } from "react-router-dom";
 import {
     MY_PROFILE_PATH,
