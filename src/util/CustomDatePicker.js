@@ -1,19 +1,19 @@
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import DatePicker from "react-datepicker";
 import { getYear, getMonth } from "date-fns";
 import { ko } from "date-fns/locale";
-import { Form, InputGroup, Container, Row, Col, Modal } from "react-bootstrap";
+import { Form, InputGroup, Container, Row, Col, Button } from "react-bootstrap";
 import CalendarFill from "../assets/svg/CalendarFill";
 import ClockFill from "../assets/svg/ClockFill";
 import CaretLeftFill from "../assets/svg/CaretLeftFill";
 import CaretRightFill from "../assets/svg/CaretRightFill";
-import { useState } from "react";
 
 const range = (start, end, step = 1) => {
     const length = Math.ceil((end - start) / step);
     return Array.from({ length }, (_, i) => start + i * step);
 };
 
-function CustomInput(props) {
+const CustomInput = React.forwardRef((props, ref) => {
     const { value, onClick } = props;
 
     return (
@@ -21,22 +21,102 @@ function CustomInput(props) {
             type="text"
             value={value}
             onClick={onClick}
+            ref={ref} // forwardRef로 전달된 ref를 연결
             style={{ cursor: "pointer" }}
             readOnly={true}
         />
     );
-}
+});
 
 function TimeSelect(props) {
-    const { showTimeSelect, handleCloseTimeSelect, selectedTime, setSelectedTime } = props;
+    const { selectedTime, setSelectedTime, closeTimeSelect } = props;
 
-    const [selectedHour, setSelectedHour] = useState("");
-    const [selectedMinute, setSelectedMinute] = useState("");
+    const [selectedHour, setSelectedHour] = useState("00");
+    const [selectedMinute, setSelectedMinute] = useState("00");
+    const containerRef = useRef(null);
+
+    useEffect(() => {
+        if (selectedTime) {
+            const [hour, minute] = selectedTime.split(":");
+            setSelectedHour(hour);
+            setSelectedMinute(minute);
+        }
+    }, [selectedTime]);
+
+    const handleTimeChange = () => {
+        const newTime = `${selectedHour}:${selectedMinute}`;
+        setSelectedTime(newTime);
+        closeTimeSelect();
+    };
+
+    const handleClickOutside = useCallback(
+        (event) => {
+            if (
+                containerRef.current &&
+                !containerRef.current.contains(event.target)
+            ) {
+                closeTimeSelect();
+            }
+        },
+        [closeTimeSelect]
+    );
+    
+    useEffect(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [handleClickOutside]);
 
     return (
-        <Modal show={showTimeSelect} onHide={handleCloseTimeSelect}>
-            <Modal.Body></Modal.Body>
-        </Modal>
+        <div
+            ref={containerRef}
+            className="time-select-container shadow bg-white rounded p-3"
+            style={{
+                position: "absolute",
+                zIndex: 10,
+                minWidth: "274px", // 위젯의 최소 너비를 설정
+            }}
+        >
+            {/* 콤보박스 간의 간격을 줄이기 위해 g-1 추가 */}
+            <Form.Group as={Row} className="g-1 justify-content-center align-items-center" controlId="timeSelect">
+                <Col xs={3}>
+                    <Form.Control
+                        as="select"
+                        value={selectedHour}
+                        onChange={(e) => setSelectedHour(e.target.value)}
+                    >
+                        {Array.from({ length: 24 }, (_, i) => (
+                            <option key={i} value={String(i).padStart(2, "0")}>
+                                {`${String(i).padStart(2, "0")}시`}
+                            </option>
+                        ))}
+                    </Form.Control>
+                </Col>
+                <Col xs={3}>
+                    <Form.Control
+                        as="select"
+                        value={selectedMinute}
+                        onChange={(e) => setSelectedMinute(e.target.value)}
+                    >
+                        {Array.from({ length: 60 }, (_, i) => (
+                            <option key={i} value={String(i).padStart(2, "0")}>
+                                {`${String(i).padStart(2, "0")}분`}
+                            </option>
+                        ))}
+                    </Form.Control>
+                </Col>
+                <Col xs={4}>
+                    <Button
+                        onClick={handleTimeChange}
+                        variant="primary"
+                        className="me-1"
+                    >
+                        {"등록"}
+                    </Button>
+                </Col>
+            </Form.Group>
+        </div>
     );
 }
 
@@ -172,9 +252,6 @@ export function SingleTimePicker(props) {
 
     const [showTimeSelect, setShowTimeSelect] = useState(false);
 
-    const handleShowTimeSelect = () => setShowTimeSelect(true);
-    const handleCloseTimeSelect = () => setShowTimeSelect(false);
-
     return (
         <>
             <InputGroup>
@@ -185,20 +262,22 @@ export function SingleTimePicker(props) {
                     <div className="react-datepicker__input-container">
                         <Form.Control
                             value={selectedTime}
+                            onClick={() => setShowTimeSelect(!showTimeSelect)}
                             onChange={(e) => setSelectedTime(e.target.value)}
-                            onClick={handleShowTimeSelect}
                             style={{ cursor: "pointer" }}
                             readOnly={true}
                         />
                     </div>
                 </div>
             </InputGroup>
-            <TimeSelect
-                showTimeSelect={showTimeSelect}
-                handleCloseTimeSelect={handleCloseTimeSelect}
-                selectedTime={selectedTime}
-                setSelectedTime={setSelectedTime}
-            />
+
+            {showTimeSelect && (
+                <TimeSelect
+                    selectedTime={selectedTime}
+                    setSelectedTime={setSelectedTime}
+                    closeTimeSelect={() => setShowTimeSelect(false)}
+                />
+            )}
         </>
     );
 }

@@ -127,6 +127,7 @@ function AttendanceBulkModal(props) {
                             {"출근시간"}
                         </Form.Label>
                         <SingleTimePicker
+                            id="commuteTime"
                             selectedTime={commuteTime}
                             setSelectedTime={setCommuteTime}
                         />
@@ -138,7 +139,11 @@ function AttendanceBulkModal(props) {
                     </Form.Group>
                     <Form.Group className="mb-3">
                         <Form.Label htmlFor="quitTime">{"퇴근시간"}</Form.Label>
-                        <InputGroup id="quitTime" className="mb-3"></InputGroup>
+                        <SingleTimePicker
+                            id="quitTime"
+                            selectedTime={quitTime}
+                            setSelectedTime={setQuitTime}
+                        />
                         {quitTimeError && (
                             <Form.Text className="text-danger">
                                 {quitTimeErrorMessage}
