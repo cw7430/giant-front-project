@@ -9,7 +9,10 @@ import {
     Badge,
 } from "react-bootstrap";
 import SearchEmployeeModal from "../SearchEmplyeeModal";
-import { SingleDatePicker } from "../../../util/CustomDatePicker";
+import {
+    SingleDatePicker,
+    SingleTimePicker,
+} from "../../../util/CustomDatePicker";
 
 function AttendanceBulkModal(props) {
     const {
@@ -23,6 +26,16 @@ function AttendanceBulkModal(props) {
     const [showSearchEmployeeModal, setShowSearchEmployeeModal] =
         useState(false);
     const [exceptedEmployeeList, setExceptedEmployeeList] = useState([]);
+    const [commuteDate, setCommuteDate] = useState(new Date());
+    const [commuteTime, setCommuteTime] = useState("09:00");
+    const [quitTime, setQuitTime] = useState("18:00");
+
+    const [commuteDateError, setCommuteDateError] = useState(false);
+    const [commuteTimeError, setCommuteTimeError] = useState(false);
+    const [quitTimeError, setQuitTimeError] = useState(false);
+    const [commuteDateErrorMessage, setCommuteDateErrorMessage] = useState("");
+    const [commuteTimeErrorMessage, setCommuteTimeErrorMessage] = useState("");
+    const [quitTimeErrorMessage, setQuitTimeErrorMessage] = useState("");
 
     const handleShowSearchEmployeeModal = () =>
         setShowSearchEmployeeModal(true);
@@ -39,6 +52,15 @@ function AttendanceBulkModal(props) {
     useEffect(() => {
         if (!showAttendanceBukModal) {
             setExceptedEmployeeList([]);
+            setCommuteDate(new Date());
+            setCommuteTime("09:00");
+            setQuitTime("18:00");
+            setCommuteDateError(false);
+            setCommuteTimeError(false);
+            setQuitTimeError(false);
+            setCommuteDateErrorMessage("");
+            setCommuteTimeErrorMessage("");
+            setQuitTimeErrorMessage("");
         }
     }, [showAttendanceBukModal]);
 
@@ -87,7 +109,42 @@ function AttendanceBulkModal(props) {
                             </Col>
                         ))}
                     </Row>
-                    <SingleDatePicker />
+                    <Form.Group className="mb-3">
+                        <Form.Label htmlFor="datePicker">{"출근일"}</Form.Label>
+                        <SingleDatePicker
+                            id="datePicker"
+                            selectedDate={commuteDate}
+                            onDateChange={setCommuteDate}
+                        />
+                        {commuteDateError && (
+                            <Form.Text className="text-danger">
+                                {commuteDateErrorMessage}
+                            </Form.Text>
+                        )}
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label htmlFor="commuteTime">
+                            {"출근시간"}
+                        </Form.Label>
+                        <SingleTimePicker
+                            selectedTime={commuteTime}
+                            setSelectedTime={setCommuteTime}
+                        />
+                        {commuteTimeError && (
+                            <Form.Text className="text-danger">
+                                {commuteTimeErrorMessage}
+                            </Form.Text>
+                        )}
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Form.Label htmlFor="quitTime">{"퇴근시간"}</Form.Label>
+                        <InputGroup id="quitTime" className="mb-3"></InputGroup>
+                        {quitTimeError && (
+                            <Form.Text className="text-danger">
+                                {quitTimeErrorMessage}
+                            </Form.Text>
+                        )}
+                    </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button
