@@ -382,6 +382,7 @@ function Employee() {
                 attendanceStatusList={attendanceStatusList}
                 existingEmployeeList={existingEmployeeList}
                 classList={classList}
+                updateData={fetchAttendanceData}
             />
         </div>
     );

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
     Modal,
     Form,
@@ -10,10 +10,12 @@ import {
     Badge,
 } from "react-bootstrap";
 import CustomPagination from "../../util/CustomPagination";
-import CaretUp from "../../assets/svg/CaretUp";
-import CaretUpFill from "../../assets/svg/CaretUpFill";
-import CaretDown from "../../assets/svg/CaretDown";
-import CaretDownFill from "../../assets/svg/CaretDownFill";
+import {
+    CaretUp,
+    CaretUpFill,
+    CaretDown,
+    CaretDownFill,
+} from "../../assets/svg/Svgs";
 import { sortCode } from "../../util/sort";
 
 function SearchEmployeeModal(props) {
@@ -140,16 +142,16 @@ function SearchEmployeeModal(props) {
         setFilteredEmployeeList(sortedList); // 상태 업데이트
     };
 
-    const handleReset = () => {
+    const handleReset = useCallback(() => {
         setEmployeeSort("employeeNumberAsc");
         setSearching(false);
         setSearchOrder("employeeName");
         setSearchWord("");
         setFilteredEmployeeList(existingEmployeeList);
         if (sortedClassList.length > 0) {
-            setSelectedClass(sortedClassList[0].classCode); // 초기값 설정
+            setSelectedClass(sortedClassList[0].classCode);
         }
-    };
+    }, [existingEmployeeList, sortedClassList]);
 
     const handleRowClick = (employeeNumber) => {
         if (view === "bulk") {
@@ -178,8 +180,11 @@ function SearchEmployeeModal(props) {
         if (!showSearchEmployeeModal) {
             handleReset();
         }
+    }, [showSearchEmployeeModal, handleReset]);
+
+    useEffect(() => {
         setFilteredEmployeeList(existingEmployeeList);
-    }, [showSearchEmployeeModal]);
+    }, [existingEmployeeList]);
 
     return (
         <Modal

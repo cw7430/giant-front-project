@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Col, Container, Row, Table } from "react-bootstrap";
 import CustomPagination from "../../../util/CustomPagination";
-import CaretUp from "../../../assets/svg/CaretUp";
-import CaretUpFill from "../../../assets/svg/CaretUpFill";
-import CaretDown from "../../../assets/svg/CaretDown";
-import CaretDownFill from "../../../assets/svg/CaretDownFill";
+import {
+    CaretUp,
+    CaretUpFill,
+    CaretDown,
+    CaretDownFill,
+} from "../../../assets/svg/Svgs";
 import { sortNumber, sortCode, sortDate } from "../../../util/sort";
 
 function AttandanceListTable(props) {

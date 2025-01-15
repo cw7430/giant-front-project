@@ -3,10 +3,12 @@ import DatePicker from "react-datepicker";
 import { getYear, getMonth } from "date-fns";
 import { ko } from "date-fns/locale";
 import { Form, InputGroup, Container, Row, Col, Button } from "react-bootstrap";
-import CalendarFill from "../assets/svg/CalendarFill";
-import ClockFill from "../assets/svg/ClockFill";
-import CaretLeftFill from "../assets/svg/CaretLeftFill";
-import CaretRightFill from "../assets/svg/CaretRightFill";
+import {
+    CalendarFill,
+    ClockFill,
+    CaretLeftFill,
+    CaretRightFill,
+} from "../assets/svg/Svgs";
 
 const range = (start, end, step = 1) => {
     const length = Math.ceil((end - start) / step);
@@ -60,7 +62,7 @@ function TimeSelect(props) {
         },
         [closeTimeSelect]
     );
-    
+
     useEffect(() => {
         document.addEventListener("mousedown", handleClickOutside);
         return () => {
@@ -79,7 +81,11 @@ function TimeSelect(props) {
             }}
         >
             {/* 콤보박스 간의 간격을 줄이기 위해 g-1 추가 */}
-            <Form.Group as={Row} className="g-1 justify-content-center align-items-center" controlId="timeSelect">
+            <Form.Group
+                as={Row}
+                className="g-1 justify-content-center align-items-center"
+                controlId="timeSelect"
+            >
                 <Col xs={3}>
                     <Form.Control
                         as="select"
@@ -248,7 +254,7 @@ export function SingleDatePicker(props) {
 }
 
 export function SingleTimePicker(props) {
-    const { selectedTime, setSelectedTime } = props;
+    const { selectedTime, setSelectedTime, disabled } = props;
 
     const [showTimeSelect, setShowTimeSelect] = useState(false);
 
@@ -258,17 +264,14 @@ export function SingleTimePicker(props) {
                 <InputGroup.Text>
                     <ClockFill />
                 </InputGroup.Text>
-                <div className="react-datepicker-wrapper">
-                    <div className="react-datepicker__input-container">
-                        <Form.Control
-                            value={selectedTime}
-                            onClick={() => setShowTimeSelect(!showTimeSelect)}
-                            onChange={(e) => setSelectedTime(e.target.value)}
-                            style={{ cursor: "pointer" }}
-                            readOnly={true}
-                        />
-                    </div>
-                </div>
+                <Form.Control
+                    value={selectedTime}
+                    onClick={() => setShowTimeSelect(!showTimeSelect)}
+                    onChange={(e) => setSelectedTime(e.target.value)}
+                    style={{ cursor: disabled ? "default" : "pointer" }}
+                    readOnly={true}
+                    disabled={disabled}
+                />
             </InputGroup>
 
             {showTimeSelect && (

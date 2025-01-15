@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Modal, Form, Button, InputGroup } from "react-bootstrap";
-import EyeOn from "../../../assets/svg/EyeOn";
-import EyeOff from "../../../assets/svg/EyeOff";
+import { EyeOn, EyeOff } from "../../../assets/svg/Svgs";
 import AlertModal from "../../modals/AlertModal";
 import ConfirmModal from "../../modals/ConfirmModal";
 import {

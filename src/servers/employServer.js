@@ -12,6 +12,16 @@ export const requestLogIn = async (request) => {
     }
 };
 
+export const requestUserIdDuplicateCheck = async (request) => {
+    try {
+        const response = await axios.post(`${DOMAIN}/check_userId`, request);
+        return response.data;
+    } catch (error) {
+        console.error("아이디 중복체크 중 오류 발생:", error);
+        return { result: "SE" };
+    }
+};
+
 export const requestProfile = async (request) => {
     try {
         const response = await axios.post(`${DOMAIN}/personal_profile`, request);
@@ -92,6 +102,26 @@ export const requestAttendanceStatusList = async () => {
     }
 };
 
+export const requestAttendanceDuplicateCheck = async () => {
+    try {
+        const response = await axios.post(`${DOMAIN}/attendance_duplicate_check`, request);
+        return response.data;
+    } catch (error) {
+        console.error("근태 중복체크 중 오류 발생:", error);
+        return { result: "SE" };
+    }
+};
+
+export const requestAttendanceDuplicateCheckBulk = async () => {
+    try {
+        const response = await axios.post(`${DOMAIN}/attendance_duplicate_check_bulk`, request);
+        return response.data;
+    } catch (error) {
+        console.error("근태 일괄 중복체크 중 오류 발생:", error);
+        return { result: "SE" };
+    }
+};
+
 export const requestRegisterEmployee = async (request) => {
     try {
         const response = await axios.post(`${DOMAIN}/register_employee`, request);
@@ -112,16 +142,6 @@ export const requestUpdateEmployee = async (request) => {
     }
 };
 
-export const requestUserIdDuplicateCheck = async (request) => {
-    try {
-        const response = await axios.post(`${DOMAIN}/check_userId`, request);
-        return response.data;
-    } catch (error) {
-        console.error("아이디 중복체크 중 오류 발생:", error);
-        return { result: "SE" };
-    }
-};
-
 export const requestChangeUserId = async (request) => {
     try {
         const response = await axios.post(`${DOMAIN}/change_userId`, request);
@@ -138,6 +158,36 @@ export const requestChangePassword = async (request) => {
         return response.data;
     } catch(error) {
         console.error("비밀번호 변경 중 오류 발생:", error);
+        return { result: "SE" };
+    }
+};
+
+export const requestRegisterAttendance = async (request) => {
+    try {
+        const response = await axios.post(`${DOMAIN}/register_attendance`, request);
+        return response.data;
+    } catch(error) {
+        console.error("근태 등록 중 오류 발생:", error);
+        return { result: "SE" };
+    }
+};
+
+export const requestRegisterAttendanceMultiple = async (request) => {
+    try {
+        const response = await axios.post(`${DOMAIN}/register_attendances_multiple`, request);
+        return response.data;
+    } catch(error) {
+        console.error("근태 다중 등록 중 오류 발생:", error);
+        return { result: "SE" };
+    }
+};
+
+export const requestUpdateAttendance = async (request) => {
+    try {
+        const response = await axios.post(`${DOMAIN}/update_attendances`, request);
+        return response.data;
+    } catch(error) {
+        console.error("근태 수정 중 오류 발생:", error);
         return { result: "SE" };
     }
 };

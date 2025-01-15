@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Col, Container, Row, Table } from "react-bootstrap";
 import CustomPagination from "../../../util/CustomPagination";
-import CaretUp from "../../../assets/svg/CaretUp";
-import CaretUpFill from "../../../assets/svg/CaretUpFill";
-import CaretDown from "../../../assets/svg/CaretDown";
-import CaretDownFill from "../../../assets/svg/CaretDownFill";
+import {
+    CaretUp,
+    CaretUpFill,
+    CaretDown,
+    CaretDownFill,
+} from "../../../assets/svg/Svgs";
 import { EMPLOYEE_PROFILE_PATH } from "../../../constant/url";
 import { sortCode } from "../../../util/sort";
 

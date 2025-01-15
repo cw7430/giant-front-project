@@ -1,6 +1,5 @@
-import { Modal, Form, Button, InputGroup } from 'react-bootstrap';
-import EyeOn from "../../assets/svg/EyeOn";
-import EyeOff from "../../assets/svg/EyeOff";
+import { Modal, Form, Button, InputGroup } from "react-bootstrap";
+import { EyeOn, EyeOff } from "../../assets/svg/Svgs";
 import { useEffect, useRef, useState } from "react";
 import { requestLogIn } from "../../servers/employServer";
 
@@ -10,7 +9,7 @@ function LogInModal(props) {
         handleCloseLoginModal,
         passwordType,
         handlePasswordType,
-        setIsLogin
+        setIsLogin,
     } = props;
 
     const userIdRef = useRef(null);
