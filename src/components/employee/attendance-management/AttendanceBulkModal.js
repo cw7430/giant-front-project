@@ -9,13 +9,16 @@ import {
     Badge,
 } from "react-bootstrap";
 import SearchEmployeeModal from "../SearchEmplyeeModal";
-import Loader from "../../../util/Loader";
 import ConfirmModal from "../../modals/ConfirmModal";
 import AlertModal from "../../modals/AlertModal";
 import {
     SingleDatePicker,
     SingleTimePicker,
 } from "../../../util/CustomDatePicker";
+import {
+    requestAttendanceDuplicateCheckBulk,
+    requestRegisterAttendanceMultiple,
+} from "../../../servers/employServer";
 
 const parseTimeToMinutes = (time) => {
     const [hours, minutes] = time.split(":").map(Number);
@@ -40,6 +43,7 @@ function AttendanceBulkModal(props) {
         existingEmployeeList,
         classList,
         updateData,
+        currentYearMonth,
     } = props;
 
     const [loading, setLoading] = useState(false);
@@ -57,6 +61,10 @@ function AttendanceBulkModal(props) {
         false,
         false,
     ]);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [showAlertModal, setShowAlertModal] = useState(false);
+    const [alertTitle, setAlertTitle] = useState("");
+    const [alertText, setAlertText] = useState("");
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -69,6 +77,15 @@ function AttendanceBulkModal(props) {
 
     const handleCloseSearchEmployeeModal = () =>
         setShowSearchEmployeeModal(false);
+
+    const handleShowConfirmModal = () => setShowConfirmModal(true);
+
+    const handleCloseConfirmModal = () => setShowConfirmModal(false);
+
+    const handleCloseAlertModal = () => {
+        setShowAlertModal(false);
+        updateData(currentYearMonth);
+    };
 
     const handleBadgeRemove = (employeeNumber) => {
         setExceptedEmployeeList(
@@ -155,9 +172,71 @@ function AttendanceBulkModal(props) {
         setCheckboxStates(states);
     }, [attendanceStatus]);
 
-    if (loading) {
-        return <Loader />; // 로딩 중일 때 표시
-    }
+    const handleSubmit = async () => {
+        handleCloseConfirmModal();
+        setLoading(true);
+
+        try {
+            // 필터링된 employeeNumber들만 추출
+            const filteredEmployees = existingEmployeeList.filter(
+                (employee) =>
+                    !exceptedEmployeeList.includes(employee.employeeNumber)
+            );
+
+            if (filteredEmployees.length === 0) {
+                setError(true);
+                setErrorMessage("등록할 직원이 없습니다.");
+                setLoading(false);
+                return;
+            }
+
+            // 오브젝트 배열 생성
+            const attendanceData = filteredEmployees.map((employee) => ({
+                employeeNumber: employee.employeeNumber,
+                commuteDate: commuteDate.toISOString().split("T")[0],
+                commuteTime: commuteTime,
+                quitTime: quitTime,
+                attendanceStatusCode: attendanceStatus,
+                attendanceRemark: "",
+            }));
+
+            const duplicateResponse = await requestAttendanceDuplicateCheckBulk(
+                attendanceData
+            );
+
+            if (duplicateResponse.result === "SU") {
+                const registerResponse =
+                    await requestRegisterAttendanceMultiple(attendanceData);
+
+                if (registerResponse.result === "SU") {
+                    setError(false);
+                    setErrorMessage("");
+                    setAlertTitle("등록완료");
+                    setAlertText("근태 등록을 완료하였습니다.");
+                    setShowAlertModal(true);
+                    handleCloseAttendanceBukModal();
+                } else {
+                    setError(true);
+                    setErrorMessage(
+                        "등록 중 문제가 발생했습니다. 다시 시도해주세요."
+                    );
+                }
+            } else if (duplicateResponse.result === "DP") {
+                setError(true);
+                setErrorMessage("중복된 요청입니다.");
+            } else if (duplicateResponse.result === "FA") {
+                setError(true);
+                setErrorMessage("등록일자를 확인하여 사원을 선택해주세요.");
+            } else {
+                setError(true);
+                setErrorMessage(
+                    "등록 중 문제가 발생했습니다. 다시 시도해주세요."
+                );
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <>
@@ -169,138 +248,159 @@ function AttendanceBulkModal(props) {
                 <Modal.Header>
                     <Modal.Title>{"근태 일괄 등록"}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
-                    <Row className="mt-3 mb-3">
-                        <InputGroup>
-                            <Col xs={4}>
-                                <span>{"제외할 사원 검색"}</span>
-                            </Col>
-                            <Col xs={2}>
-                                <Button
-                                    variant="primary"
-                                    onClick={handleShowSearchEmployeeModal}
-                                >
-                                    {"검색"}
-                                </Button>
-                            </Col>
-                        </InputGroup>
-                    </Row>
-                    <Row className="mt-3">
-                        {exceptedEmployeeList.map((employeeNumber) => (
-                            <Col className="mb-1" xs={2} key={employeeNumber}>
-                                <Badge pill bg="dark">
-                                    {employeeNumber}
-                                    <button
-                                        className="icon-button"
-                                        onClick={() =>
-                                            handleBadgeRemove(employeeNumber)
-                                        }
+                {!loading && (
+                    <Modal.Body>
+                        <Row className="mt-3 mb-3">
+                            <InputGroup>
+                                <Col xs={4}>
+                                    <span>{"제외할 사원 검색"}</span>
+                                </Col>
+                                <Col xs={2}>
+                                    <Button
+                                        variant="primary"
+                                        onClick={handleShowSearchEmployeeModal}
                                     >
-                                        <Form.Text className="text-warning">
-                                            {"X"}
-                                        </Form.Text>
-                                    </button>
-                                </Badge>
-                            </Col>
-                        ))}
-                    </Row>
-                    <Form.Group className="mb-3">
-                        <Form.Label htmlFor="commuteStatus">
-                            {"출근여부"}
-                        </Form.Label>
-                        <Row id="commuteStatus">
-                            <Col xs={2}>
-                                <Form.Check
-                                    type="radio"
-                                    value={"false"}
-                                    label={"출근"}
-                                    name="commuteStatus"
-                                    checked={!isAbsent}
-                                    onChange={() => setIsAbsent(false)}
-                                />
-                            </Col>
-                            <Col xs={2}>
-                                <Form.Check
-                                    type="radio"
-                                    value={"true"}
-                                    label={"결근"}
-                                    name="commuteStatus"
-                                    checked={isAbsent}
-                                    onChange={() => setIsAbsent(true)}
-                                />
-                            </Col>
+                                        {"검색"}
+                                    </Button>
+                                </Col>
+                            </InputGroup>
                         </Row>
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label htmlFor="datePicker">{"출근일"}</Form.Label>
-                        <SingleDatePicker
-                            id="datePicker"
-                            selectedDate={commuteDate}
-                            onDateChange={setCommuteDate}
-                        />
-                    </Form.Group>
-                    <Row className="mb-3">
-                        <Form.Group as={Col}>
-                            <Form.Label htmlFor="commuteTime">
-                                {"출근시간"}
-                            </Form.Label>
-                            <SingleTimePicker
-                                id="commuteTime"
-                                selectedTime={commuteTime}
-                                setSelectedTime={setCommuteTime}
-                                disabled={isAbsent}
-                            />
-                        </Form.Group>
-                        <Form.Group as={Col}>
-                            <Form.Label htmlFor="quitTime">
-                                {"퇴근시간"}
-                            </Form.Label>
-                            <SingleTimePicker
-                                id="quitTime"
-                                selectedTime={quitTime}
-                                setSelectedTime={setQuitTime}
-                                disabled={isAbsent}
-                            />
-                        </Form.Group>
-                    </Row>
-                    <Form.Group className="mb-3">
-                        <Form.Label className="me-3" htmlFor="attendanceStatus">
-                            {"근태상태"}
-                        </Form.Label>
-                        <Form.Text className="text-info">
-                            {"*출근여부 및 시간 입력시 자동으로 체크됩니다."}
-                        </Form.Text>
-                        <Row id="commuteStatus">
-                            {filteredAttendanceStatusList.map(
-                                (attendanceStatus, key) => (
-                                    <Col xs={2} key={key}>
-                                        <Form.Check
-                                            type="checkbox"
-                                            value={key}
-                                            label={
-                                                attendanceStatus.attendanceStatusName
+                        <Row className="mt-3">
+                            {exceptedEmployeeList.map((employeeNumber) => (
+                                <Col
+                                    className="mb-1"
+                                    xs={2}
+                                    key={employeeNumber}
+                                >
+                                    <Badge pill bg="dark">
+                                        {employeeNumber}
+                                        <button
+                                            className="icon-button"
+                                            onClick={() =>
+                                                handleBadgeRemove(
+                                                    employeeNumber
+                                                )
                                             }
-                                            checked={checkboxStates[key]}
-                                            readOnly
-                                        />
-                                    </Col>
-                                )
-                            )}
+                                        >
+                                            <Form.Text className="text-warning">
+                                                {"X"}
+                                            </Form.Text>
+                                        </button>
+                                    </Badge>
+                                </Col>
+                            ))}
                         </Row>
-                    </Form.Group>
-                    <Form.Group>
-                        {error && (
-                            <Form.Text className="text-error">
-                                {errorMessage}
+                        <Form.Group className="mb-3">
+                            <Form.Label htmlFor="commuteStatus">
+                                {"출근여부"}
+                            </Form.Label>
+                            <Row id="commuteStatus">
+                                <Col xs={2}>
+                                    <Form.Check
+                                        type="radio"
+                                        value={"false"}
+                                        label={"출근"}
+                                        name="commuteStatus"
+                                        checked={!isAbsent}
+                                        onChange={() => setIsAbsent(false)}
+                                    />
+                                </Col>
+                                <Col xs={2}>
+                                    <Form.Check
+                                        type="radio"
+                                        value={"true"}
+                                        label={"결근"}
+                                        name="commuteStatus"
+                                        checked={isAbsent}
+                                        onChange={() => setIsAbsent(true)}
+                                    />
+                                </Col>
+                            </Row>
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label htmlFor="datePicker">
+                                {"출근일"}
+                            </Form.Label>
+                            <SingleDatePicker
+                                id="datePicker"
+                                selectedDate={commuteDate}
+                                onDateChange={setCommuteDate}
+                            />
+                        </Form.Group>
+                        <Row className="mb-3">
+                            <Form.Group as={Col}>
+                                <Form.Label htmlFor="commuteTime">
+                                    {"출근시간"}
+                                </Form.Label>
+                                <SingleTimePicker
+                                    id="commuteTime"
+                                    selectedTime={commuteTime}
+                                    setSelectedTime={setCommuteTime}
+                                    disabled={isAbsent}
+                                />
+                            </Form.Group>
+                            <Form.Group as={Col}>
+                                <Form.Label htmlFor="quitTime">
+                                    {"퇴근시간"}
+                                </Form.Label>
+                                <SingleTimePicker
+                                    id="quitTime"
+                                    selectedTime={quitTime}
+                                    setSelectedTime={setQuitTime}
+                                    disabled={isAbsent}
+                                />
+                            </Form.Group>
+                        </Row>
+                        <Form.Group className="mb-3">
+                            <Form.Label
+                                className="me-3"
+                                htmlFor="attendanceStatus"
+                            >
+                                {"근태상태"}
+                            </Form.Label>
+                            <Form.Text className="text-primary">
+                                {
+                                    "*출근여부 및 시간 입력시 자동으로 체크됩니다."
+                                }
                             </Form.Text>
-                        )}
-                    </Form.Group>
-                </Modal.Body>
+                            <Row id="commuteStatus">
+                                {filteredAttendanceStatusList.map(
+                                    (attendanceStatus, key) => (
+                                        <Col xs={2} key={key}>
+                                            <Form.Check
+                                                type="checkbox"
+                                                value={key}
+                                                label={
+                                                    attendanceStatus.attendanceStatusName
+                                                }
+                                                checked={checkboxStates[key]}
+                                                readOnly
+                                            />
+                                        </Col>
+                                    )
+                                )}
+                            </Row>
+                        </Form.Group>
+                        <Form.Group>
+                            {error && (
+                                <Form.Text className="text-error">
+                                    {errorMessage}
+                                </Form.Text>
+                            )}
+                        </Form.Group>
+                    </Modal.Body>
+                )}
+                {loading && (
+                    <Modal.Body>
+                        <Row className="d-flex justify-content-center align-items-center">
+                            <Form.Text className="text-info">
+                                {"등록중..."}
+                            </Form.Text>
+                        </Row>
+                    </Modal.Body>
+                )}
                 <Modal.Footer>
-                    <Button
-                        variant="success"
-                        onClick={handleCloseAttendanceBukModal}
-                    >
+                    <Button variant="success" onClick={handleShowConfirmModal}>
                         {"등록"}
                     </Button>
                     <Button
@@ -319,6 +419,21 @@ function AttendanceBulkModal(props) {
                 selectedEmployeeList={exceptedEmployeeList}
                 setSelectedEmployeeList={setExceptedEmployeeList}
                 classList={classList}
+            />
+            <ConfirmModal
+                showConfirmModal={showConfirmModal}
+                handleCloseConfirmModal={handleCloseConfirmModal}
+                handleConfirm={handleSubmit}
+                confirmTitle={"확인"}
+                confirmText={`${
+                    commuteDate.toISOString().split("T")[0]
+                } 근태 정보를 일괄 등록하시겠습니까?`}
+            />
+            <AlertModal
+                showAlertModal={showAlertModal}
+                handleCloseAlertModal={handleCloseAlertModal}
+                alertTitle={alertTitle}
+                alertText={alertText}
             />
         </>
     );

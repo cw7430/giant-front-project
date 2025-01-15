@@ -102,7 +102,7 @@ export const requestAttendanceStatusList = async () => {
     }
 };
 
-export const requestAttendanceDuplicateCheck = async () => {
+export const requestAttendanceDuplicateCheck = async (request) => {
     try {
         const response = await axios.post(`${DOMAIN}/attendance_duplicate_check`, request);
         return response.data;
@@ -112,7 +112,7 @@ export const requestAttendanceDuplicateCheck = async () => {
     }
 };
 
-export const requestAttendanceDuplicateCheckBulk = async () => {
+export const requestAttendanceDuplicateCheckBulk = async (request) => {
     try {
         const response = await axios.post(`${DOMAIN}/attendance_duplicate_check_bulk`, request);
         return response.data;

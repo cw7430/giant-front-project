@@ -383,6 +383,7 @@ function Employee() {
                 existingEmployeeList={existingEmployeeList}
                 classList={classList}
                 updateData={fetchAttendanceData}
+                currentYearMonth={currentYearMonth}
             />
         </div>
     );
