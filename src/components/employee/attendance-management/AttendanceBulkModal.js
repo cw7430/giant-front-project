@@ -37,8 +37,8 @@ const addMinutesToTime = (time, minutesToAdd) => {
 
 function AttendanceBulkModal(props) {
     const {
-        showAttendanceBukModal,
-        handleCloseAttendanceBukModal,
+        showAttendanceBulkModal,
+        handleCloseAttendanceBulkModal,
         attendanceStatusList,
         existingEmployeeList,
         classList,
@@ -121,7 +121,7 @@ function AttendanceBulkModal(props) {
 
     // 모달 상태 변경에 따른 초기화 및 상태 계산
     useEffect(() => {
-        if (!showAttendanceBukModal) {
+        if (!showAttendanceBulkModal) {
             setExceptedEmployeeList([]);
             setIsAbsent(false);
             setCommuteDate(new Date());
@@ -132,7 +132,7 @@ function AttendanceBulkModal(props) {
         } else {
             calculateAttendanceStatus(); // 모달이 열릴 때 초기 계산 실행
         }
-    }, [showAttendanceBukModal, calculateAttendanceStatus]);
+    }, [showAttendanceBulkModal, calculateAttendanceStatus]);
 
     // isAbsent 변경에 따른 출근 상태 처리
     useEffect(() => {
@@ -214,7 +214,7 @@ function AttendanceBulkModal(props) {
                     setAlertTitle("등록완료");
                     setAlertText("근태 등록을 완료하였습니다.");
                     setShowAlertModal(true);
-                    handleCloseAttendanceBukModal();
+                    handleCloseAttendanceBulkModal();
                 } else {
                     setError(true);
                     setErrorMessage(
@@ -242,8 +242,8 @@ function AttendanceBulkModal(props) {
         <>
             <Modal
                 backdrop="static"
-                show={showAttendanceBukModal}
-                onHide={handleCloseAttendanceBukModal}
+                show={showAttendanceBulkModal}
+                onHide={handleCloseAttendanceBulkModal}
             >
                 <Modal.Header>
                     <Modal.Title>{"근태 일괄 등록"}</Modal.Title>
@@ -405,7 +405,7 @@ function AttendanceBulkModal(props) {
                     </Button>
                     <Button
                         variant="danger"
-                        onClick={handleCloseAttendanceBukModal}
+                        onClick={handleCloseAttendanceBulkModal}
                     >
                         {"닫기"}
                     </Button>

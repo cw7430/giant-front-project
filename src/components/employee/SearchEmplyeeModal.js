@@ -26,6 +26,7 @@ function SearchEmployeeModal(props) {
         existingEmployeeList,
         selectedEmployeeList,
         setSelectedEmployeeList,
+        setSelectedEmployeeNumber,
         classList,
     } = props;
 
@@ -167,6 +168,9 @@ function SearchEmployeeModal(props) {
                     employeeNumber,
                 ]);
             }
+        } else if (view === "single") {
+            setSelectedEmployeeNumber(employeeNumber);
+            handleCloseSearchEmployeeModal();
         }
     };
 

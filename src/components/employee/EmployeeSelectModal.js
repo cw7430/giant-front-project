@@ -1,10 +1,10 @@
 import { Modal, Button, Container, Row, Col } from "react-bootstrap";
 
 function EmployeeSelectModal(props) {
-    const { view, showEmployeeSelectModal, handleCloseEmployeeSelectModal, handleShowAttendanceBukModal } = props;
+    const { view, showEmployeeSelectModal, handleCloseEmployeeSelectModal, handleShowAttendanceBulkModal } = props;
     
     const toggleBulkButton = () => {
-        if(view === "Attendance") handleShowAttendanceBukModal();
+        if(view === "Attendance") handleShowAttendanceBulkModal();
         handleCloseEmployeeSelectModal();
     }
     

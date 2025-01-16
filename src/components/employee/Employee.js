@@ -49,7 +49,7 @@ function Employee() {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
     const [showEmployeeSelectModal, setShowEmployeeSelectModal] =
         useState(false);
-    const [showAttendanceBukModal, setShowAttendanceBukModal] = useState(false);
+    const [showAttendanceBulkModal, setShowAttendanceBulkModal] = useState(false);
 
     const [employeeSort, setEmployeeSort] = useState("employeeNumberAsc");
     const [attendanceSort, setAttendanceSort] = useState("idAsc");
@@ -74,11 +74,11 @@ function Employee() {
     const handleCloseEmployeeSelectModal = () =>
         setShowEmployeeSelectModal(false);
 
-    const handleShowAttendanceBukModal = () => setShowAttendanceBukModal(true);
+    const handleShowAttendanceBulkModal = () => setShowAttendanceBulkModal(true);
 
-    const handleCloseAttendanceBukModal = () => {
+    const handleCloseAttendanceBulkModal = () => {
         setFilteredEmployeeList(existingEmployeeList);
-        setShowAttendanceBukModal(false);
+        setShowAttendanceBulkModal(false);
     };
 
     const toggleRegisterButton = () => {
@@ -366,7 +366,7 @@ function Employee() {
                 view={view}
                 showEmployeeSelectModal={showEmployeeSelectModal}
                 handleCloseEmployeeSelectModal={handleCloseEmployeeSelectModal}
-                handleShowAttendanceBukModal={handleShowAttendanceBukModal}
+                handleShowAttendanceBulkModal={handleShowAttendanceBulkModal}
             />
             <RegisterEmployeeModal
                 showRegisterModal={showRegisterModal}
@@ -377,8 +377,8 @@ function Employee() {
                 updateData={fetchEmployeeData}
             />
             <AttendanceBulkModal
-                showAttendanceBukModal={showAttendanceBukModal}
-                handleCloseAttendanceBukModal={handleCloseAttendanceBukModal}
+                showAttendanceBulkModal={showAttendanceBulkModal}
+                handleCloseAttendanceBulkModal={handleCloseAttendanceBulkModal}
                 attendanceStatusList={attendanceStatusList}
                 existingEmployeeList={existingEmployeeList}
                 classList={classList}
