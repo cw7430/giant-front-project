@@ -318,6 +318,7 @@ function AttendanceModal(props) {
                 existingEmployeeList={existingEmployeeList}
                 setSelectedEmployeeNumber={setSelectedEmployeeNumber}
                 classList={classList}
+                selectedEmployeeList={[]}
             />
             <ConfirmModal
                 showConfirmModal={showConfirmModal}

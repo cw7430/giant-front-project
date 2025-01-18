@@ -1,13 +1,24 @@
 import { Modal, Button, Container, Row, Col } from "react-bootstrap";
 
 function EmployeeSelectModal(props) {
-    const { view, showEmployeeSelectModal, handleCloseEmployeeSelectModal, handleShowAttendanceBulkModal } = props;
-    
-    const toggleBulkButton = () => {
-        if(view === "Attendance") handleShowAttendanceBulkModal();
+    const {
+        view,
+        showEmployeeSelectModal,
+        handleCloseEmployeeSelectModal,
+        handleShowAttendanceModal,
+        handleShowAttendanceBulkModal,
+    } = props;
+
+    const toggleSingleButton = () => {
+        if (view === "Attendance") handleShowAttendanceModal();
         handleCloseEmployeeSelectModal();
     }
-    
+
+    const toggleBulkButton = () => {
+        if (view === "Attendance") handleShowAttendanceBulkModal();
+        handleCloseEmployeeSelectModal();
+    };
+
     return (
         <Modal
             backdrop="static"
@@ -21,10 +32,15 @@ function EmployeeSelectModal(props) {
                 <Container>
                     <Row className="justify-content-center">
                         <Col xs="auto">
-                            <Button variant="primary">{"개별등록"}</Button>
+                            <Button variant="primary" onClick={toggleSingleButton}>{"개별등록"}</Button>
                         </Col>
                         <Col xs="auto">
-                            <Button variant="secondary" onClick={toggleBulkButton}>{"일괄등록"}</Button>
+                            <Button
+                                variant="secondary"
+                                onClick={toggleBulkButton}
+                            >
+                                {"일괄등록"}
+                            </Button>
                         </Col>
                     </Row>
                 </Container>

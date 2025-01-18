@@ -20,6 +20,7 @@ import { sortCode } from "../../util/sort";
 import AttandanceListTable from "./attendance-management/AttendanceListTable";
 import SalaryListTable from "./salary-management/SalaryListTable";
 import AttendanceListSearchBox from "./attendance-management/AttendanceListSearchBox";
+import AttendanceModal from "./attendance-management/AttendanceModal";
 
 function Employee() {
     const now = new Date();
@@ -49,7 +50,9 @@ function Employee() {
     const [showRegisterModal, setShowRegisterModal] = useState(false);
     const [showEmployeeSelectModal, setShowEmployeeSelectModal] =
         useState(false);
-    const [showAttendanceBulkModal, setShowAttendanceBulkModal] = useState(false);
+    const [showAttendanceModal, setShowAttendanceModal] = useState(false);
+    const [showAttendanceBulkModal, setShowAttendanceBulkModal] =
+        useState(false);
 
     const [employeeSort, setEmployeeSort] = useState("employeeNumberAsc");
     const [attendanceSort, setAttendanceSort] = useState("idAsc");
@@ -74,12 +77,15 @@ function Employee() {
     const handleCloseEmployeeSelectModal = () =>
         setShowEmployeeSelectModal(false);
 
-    const handleShowAttendanceBulkModal = () => setShowAttendanceBulkModal(true);
+    const handleShowAttendanceModal = () => setShowAttendanceModal(true);
 
-    const handleCloseAttendanceBulkModal = () => {
-        setFilteredEmployeeList(existingEmployeeList);
+    const handleCloseAttendanceModal = () => setShowAttendanceModal(false);
+
+    const handleShowAttendanceBulkModal = () =>
+        setShowAttendanceBulkModal(true);
+
+    const handleCloseAttendanceBulkModal = () =>
         setShowAttendanceBulkModal(false);
-    };
 
     const toggleRegisterButton = () => {
         const authorityCode = sessionStorage.getItem("authorityCode");
@@ -366,7 +372,9 @@ function Employee() {
                 view={view}
                 showEmployeeSelectModal={showEmployeeSelectModal}
                 handleCloseEmployeeSelectModal={handleCloseEmployeeSelectModal}
+                handleShowAttendanceModal={handleShowAttendanceModal}
                 handleShowAttendanceBulkModal={handleShowAttendanceBulkModal}
+
             />
             <RegisterEmployeeModal
                 showRegisterModal={showRegisterModal}
@@ -375,6 +383,15 @@ function Employee() {
                 departmentList={departmentList}
                 teamList={teamList}
                 updateData={fetchEmployeeData}
+            />
+            <AttendanceModal 
+                showAttendanceModal={showAttendanceModal}
+                handleCloseAttendanceModal={handleCloseAttendanceModal}
+                attendanceStatusList={attendanceStatusList}
+                existingEmployeeList={existingEmployeeList}
+                classList={classList}
+                updateData={fetchAttendanceData}
+                currentYearMonth={currentYearMonth}
             />
             <AttendanceBulkModal
                 showAttendanceBulkModal={showAttendanceBulkModal}
