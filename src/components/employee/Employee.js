@@ -15,7 +15,6 @@ import {
     requestTeamList,
     requestAttendanceList,
     requestAttendanceStatusList,
-    requestAttendance,
 } from "../../servers/employServer";
 import { sortCode } from "../../util/sort";
 import AttandanceListTable from "./attendance-management/AttendanceListTable";
@@ -48,7 +47,7 @@ function Employee() {
     const [departmentList, setDepartmentList] = useState([]);
     const [teamList, setTeamList] = useState([]);
     const [attendanceStatusList, setAttendanceStatusList] = useState([]);
-    const [selectedAttendance, setSelectedAttendance] = useState({});
+    const [selectedAttendanceId, setSelectedAttendanceId] = useState("");
 
     const [showRegisterModal, setShowRegisterModal] = useState(false);
     const [showEmployeeSelectModal, setShowEmployeeSelectModal] =
@@ -261,17 +260,8 @@ function Employee() {
     }, []);
 
     const handleAttendanceSingle = async (attendanceId) => {
-        await fetchData(
-            async () => {
-                return await requestAttendance({ attendanceId });
-            },
-            (responseData) => {
-                setSelectedAttendance(responseData);
-            }
-        );
-        if(!loading){
-            setShowAttendancUpdateModal(true);
-        }
+        setSelectedAttendanceId(attendanceId);
+        handleShowAttendanceUpdateModal();
     };
 
     useEffect(() => {
@@ -430,7 +420,7 @@ function Employee() {
             <AttendanceUpdateModal
                 showAttendancUpdateModal={showAttendancUpdateModal}
                 handleCloseAttendanceUpdateModal={handleCloseAttendanceUpdateModal}
-                selectedAttendance={selectedAttendance}
+                selectedAttendanceId={selectedAttendanceId}
                 attendanceStatusList={attendanceStatusList}
                 updateData={fetchAttendanceData}
                 currentYearMonth={currentYearMonth}
