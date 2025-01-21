@@ -82,6 +82,16 @@ export const requestEmploymentStatusList = async () => {
     }
 };
 
+export const requestAttendance = async (request) => {
+    try {
+        const response = await axios.post(`${DOMAIN}/attendance`, request);
+        return response.data;
+    } catch(error) {
+        console.error("근태 상세보기 불러오던 중 오류 발생:", error);
+        return { result: "SE" };
+    }
+}
+
 export const requestAttendanceList = async (request) => {
     try {
         const response = await axios.post(`${DOMAIN}/attendance_list`, request);

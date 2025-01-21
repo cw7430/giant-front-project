@@ -15,12 +15,14 @@ import {
     requestTeamList,
     requestAttendanceList,
     requestAttendanceStatusList,
+    requestAttendance,
 } from "../../servers/employServer";
 import { sortCode } from "../../util/sort";
 import AttandanceListTable from "./attendance-management/AttendanceListTable";
 import SalaryListTable from "./salary-management/SalaryListTable";
 import AttendanceListSearchBox from "./attendance-management/AttendanceListSearchBox";
 import AttendanceModal from "./attendance-management/AttendanceModal";
+import AttendanceUpdateModal from "./attendance-management/AttendanceUpdateModal";
 
 function Employee() {
     const now = new Date();
@@ -46,12 +48,15 @@ function Employee() {
     const [departmentList, setDepartmentList] = useState([]);
     const [teamList, setTeamList] = useState([]);
     const [attendanceStatusList, setAttendanceStatusList] = useState([]);
+    const [selectedAttendance, setSelectedAttendance] = useState({});
 
     const [showRegisterModal, setShowRegisterModal] = useState(false);
     const [showEmployeeSelectModal, setShowEmployeeSelectModal] =
         useState(false);
     const [showAttendanceModal, setShowAttendanceModal] = useState(false);
     const [showAttendanceBulkModal, setShowAttendanceBulkModal] =
+        useState(false);
+    const [showAttendancUpdateModal, setShowAttendancUpdateModal] =
         useState(false);
 
     const [employeeSort, setEmployeeSort] = useState("employeeNumberAsc");
@@ -86,6 +91,12 @@ function Employee() {
 
     const handleCloseAttendanceBulkModal = () =>
         setShowAttendanceBulkModal(false);
+
+    const handleShowAttendanceUpdateModal = () =>
+        setShowAttendancUpdateModal(true);
+
+    const handleCloseAttendanceUpdateModal = () =>
+        setShowAttendancUpdateModal(false);
 
     const toggleRegisterButton = () => {
         const authorityCode = sessionStorage.getItem("authorityCode");
@@ -249,6 +260,20 @@ function Employee() {
         );
     }, []);
 
+    const handleAttendanceSingle = async (attendanceId) => {
+        await fetchData(
+            async () => {
+                return await requestAttendance({ attendanceId });
+            },
+            (responseData) => {
+                setSelectedAttendance(responseData);
+            }
+        );
+        if(!loading){
+            setShowAttendancUpdateModal(true);
+        }
+    };
+
     useEffect(() => {
         fetchEmployeeData();
     }, [fetchEmployeeData]);
@@ -358,6 +383,7 @@ function Employee() {
                     setFilteredAttendanceList={setFilteredAttendanceList}
                     attendanceSort={attendanceSort}
                     setAttendanceSort={setAttendanceSort}
+                    handleAttendanceSingle={handleAttendanceSingle}
                 />
             )}
             {view === "Salary" && <SalaryListTable />}
@@ -374,7 +400,6 @@ function Employee() {
                 handleCloseEmployeeSelectModal={handleCloseEmployeeSelectModal}
                 handleShowAttendanceModal={handleShowAttendanceModal}
                 handleShowAttendanceBulkModal={handleShowAttendanceBulkModal}
-
             />
             <RegisterEmployeeModal
                 showRegisterModal={showRegisterModal}
@@ -384,7 +409,7 @@ function Employee() {
                 teamList={teamList}
                 updateData={fetchEmployeeData}
             />
-            <AttendanceModal 
+            <AttendanceModal
                 showAttendanceModal={showAttendanceModal}
                 handleCloseAttendanceModal={handleCloseAttendanceModal}
                 attendanceStatusList={attendanceStatusList}
@@ -399,6 +424,14 @@ function Employee() {
                 attendanceStatusList={attendanceStatusList}
                 existingEmployeeList={existingEmployeeList}
                 classList={classList}
+                updateData={fetchAttendanceData}
+                currentYearMonth={currentYearMonth}
+            />
+            <AttendanceUpdateModal
+                showAttendancUpdateModal={showAttendancUpdateModal}
+                handleCloseAttendanceUpdateModal={handleCloseAttendanceUpdateModal}
+                selectedAttendance={selectedAttendance}
+                attendanceStatusList={attendanceStatusList}
                 updateData={fetchAttendanceData}
                 currentYearMonth={currentYearMonth}
             />

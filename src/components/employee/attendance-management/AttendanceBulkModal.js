@@ -399,17 +399,22 @@ function AttendanceBulkModal(props) {
                         </Row>
                     </Modal.Body>
                 )}
-                <Modal.Footer>
-                    <Button variant="success" onClick={handleShowConfirmModal}>
-                        {"등록"}
-                    </Button>
-                    <Button
-                        variant="danger"
-                        onClick={handleCloseAttendanceBulkModal}
-                    >
-                        {"닫기"}
-                    </Button>
-                </Modal.Footer>
+                {!loading && (
+                    <Modal.Footer>
+                        <Button
+                            variant="success"
+                            onClick={handleShowConfirmModal}
+                        >
+                            {"등록"}
+                        </Button>
+                        <Button
+                            variant="danger"
+                            onClick={handleCloseAttendanceBulkModal}
+                        >
+                            {"닫기"}
+                        </Button>
+                    </Modal.Footer>
+                )}
             </Modal>
             <SearchEmployeeModal
                 view={"bulk"}

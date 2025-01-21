@@ -52,11 +52,15 @@ function AttendanceModal(props) {
         false,
         false,
     ]);
+    const [attendanceRemark, setAttendanceRemark] = useState("");
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [showAlertModal, setShowAlertModal] = useState(false);
     const [alertTitle, setAlertTitle] = useState("");
     const [alertText, setAlertText] = useState("");
+    const [employeeNumberError, setEmployeeNumberError] = useState(false);
     const [error, setError] = useState(false);
+    const [employeeNumberErrorMessage, setEmployeeNumberErrorMessage] =
+        useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
     const filteredAttendanceStatusList = attendanceStatusList.filter(
@@ -112,7 +116,10 @@ function AttendanceModal(props) {
             setCommuteDate(new Date());
             setCommuteTime("09:00");
             setQuitTime("18:00");
+            setAttendanceRemark("");
+            setEmployeeNumberError(false);
             setError(false);
+            setEmployeeNumberErrorMessage("");
             setErrorMessage("");
         } else {
             calculateAttendanceStatus(); // 모달이 열릴 때 초기 계산 실행
@@ -157,17 +164,58 @@ function AttendanceModal(props) {
         setCheckboxStates(states);
     }, [attendanceStatus]);
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         handleCloseConfirmModal();
-        const attendanceData = {
-            employeeNumber: selectedEmployeeNumber,
-            commuteDate: commuteDate.toISOString().split("T")[0],
-            commuteTime: commuteTime,
-            quitTime: quitTime,
-            attendanceStatusCode: attendanceStatus,
-            attendanceRemark: "",
-       };
-       console.log(`데이터 디버깅: ${attendanceData}`);
+
+        if (!selectedEmployeeNumber) {
+            setEmployeeNumberError(true);
+            setEmployeeNumberErrorMessage("사번을 선택하여주세요.");
+        } else {
+            setEmployeeNumberError(false);
+            setEmployeeNumberErrorMessage("");
+            const attendanceData = {
+                employeeNumber: selectedEmployeeNumber,
+                commuteDate: commuteDate.toISOString().split("T")[0],
+                commuteTime: commuteTime,
+                quitTime: quitTime,
+                attendanceStatusCode: attendanceStatus,
+                attendanceRemark: attendanceRemark,
+            };
+
+            const duplicateResponse = await requestAttendanceDuplicateCheck(
+                attendanceData
+            );
+
+            if (duplicateResponse.result === "SU") {
+                const registerResponse = await requestRegisterAttendance(
+                    attendanceData
+                );
+                if (registerResponse.result === "SU") {
+                    setError(false);
+                    setErrorMessage("");
+                    setAlertTitle("등록완료");
+                    setAlertText("근태 등록을 완료하였습니다.");
+                    setShowAlertModal(true);
+                    handleCloseAttendanceModal();
+                } else {
+                    setError(true);
+                    setErrorMessage(
+                        "등록 중 문제가 발생했습니다. 다시 시도해주세요."
+                    );
+                }
+            } else if (duplicateResponse.result === "DP") {
+                setError(true);
+                setErrorMessage("중복된 요청입니다.");
+            } else if (duplicateResponse.result === "FA") {
+                setError(true);
+                setErrorMessage("등록일자를 확인하여 사원을 선택해주세요.");
+            } else {
+                setError(true);
+                setErrorMessage(
+                    "등록 중 문제가 발생했습니다. 다시 시도해주세요."
+                );
+            }
+        }
     };
 
     return (
@@ -182,13 +230,14 @@ function AttendanceModal(props) {
                 </Modal.Header>
                 <Modal.Body>
                     <Form.Group className="mt-3 mb-3">
-                        <Form.Label htmlFor="commuteStatus">
+                        <Form.Label htmlFor="employeeNumber">
                             {"사번"}
                         </Form.Label>
                         <InputGroup>
                             <Col xs={5}>
                                 <Form.Control
                                     type="text"
+                                    id="employeeNumber"
                                     value={selectedEmployeeNumber}
                                     onChange={(e) =>
                                         setSelectedEmployeeNumber(
@@ -207,6 +256,13 @@ function AttendanceModal(props) {
                             </Col>
                         </InputGroup>
                     </Form.Group>
+                    {employeeNumberError && (
+                        <Form.Group>
+                            <Form.Text className="text-error">
+                                {employeeNumberErrorMessage}
+                            </Form.Text>
+                        </Form.Group>
+                    )}
                     <Form.Group className="mb-3">
                         <Form.Label htmlFor="commuteStatus">
                             {"출근여부"}
@@ -290,6 +346,21 @@ function AttendanceModal(props) {
                                 )
                             )}
                         </Row>
+                    </Form.Group>
+                    <Form.Group className="mt-3 mb-3">
+                        <Form.Label htmlFor="attendanceRemark">
+                            {"비고"}
+                        </Form.Label>
+                        <InputGroup>
+                            <Form.Control
+                                type="text"
+                                id="attendanceRemark"
+                                value={attendanceRemark}
+                                onChange={(e) =>
+                                    setAttendanceRemark(e.target.value)
+                                }
+                            />
+                        </InputGroup>
                     </Form.Group>
                     <Form.Group>
                         {error && (

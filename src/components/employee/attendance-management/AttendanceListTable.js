@@ -15,6 +15,7 @@ function AttandanceListTable(props) {
         setFilteredAttendanceList,
         attendanceSort,
         setAttendanceSort,
+        handleAttendanceSingle,
     } = props;
 
     const [pagedData, setPagedData] = useState(filteredAttendanceList);
@@ -229,6 +230,11 @@ function AttandanceListTable(props) {
                                 <tr
                                     key={attendance.attendanceId}
                                     style={{ cursor: "pointer" }}
+                                    onClick={() =>
+                                        handleAttendanceSingle(
+                                            attendance.attendanceId
+                                        )
+                                    }
                                 >
                                     <td>{attendance.id}</td>
                                     <td>{attendance.employeeNumber}</td>
