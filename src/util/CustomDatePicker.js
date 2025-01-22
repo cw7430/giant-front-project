@@ -30,6 +30,12 @@ const CustomInput = React.forwardRef((props, ref) => {
     );
 });
 
+const formatTime = (time) => {
+    if (!time || typeof time !== "string") return "";
+    const parts = time.split(":");
+    return parts.slice(0, 2).join(":");
+};
+
 function TimeSelect(props) {
     const { selectedTime, setSelectedTime, closeTimeSelect } = props;
 
@@ -256,6 +262,8 @@ export function SingleDatePicker(props) {
 export function SingleTimePicker(props) {
     const { selectedTime, setSelectedTime, disabled } = props;
 
+    const formatedTime = formatTime(selectedTime);
+
     const [showTimeSelect, setShowTimeSelect] = useState(false);
 
     return (
@@ -265,7 +273,7 @@ export function SingleTimePicker(props) {
                     <ClockFill />
                 </InputGroup.Text>
                 <Form.Control
-                    value={selectedTime}
+                    value={formatedTime}
                     onClick={() => setShowTimeSelect(!showTimeSelect)}
                     onChange={(e) => setSelectedTime(e.target.value)}
                     style={{ cursor: disabled ? "default" : "pointer" }}
