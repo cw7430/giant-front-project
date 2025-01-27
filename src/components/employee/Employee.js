@@ -15,6 +15,7 @@ import {
     requestTeamList,
     requestAttendanceList,
     requestAttendanceStatusList,
+    requestSalaryList,
 } from "../../servers/employServer";
 import { sortCode } from "../../util/sort";
 import AttandanceListTable from "./attendance-management/AttendanceListTable";
@@ -22,6 +23,7 @@ import SalaryListTable from "./salary-management/SalaryListTable";
 import AttendanceListSearchBox from "./attendance-management/AttendanceListSearchBox";
 import AttendanceModal from "./attendance-management/AttendanceModal";
 import AttendanceUpdateModal from "./attendance-management/AttendanceUpdateModal";
+import SalaryListSearchBox from "./salary-management/SalaryListSearchBox";
 
 function Employee() {
     const now = new Date();
@@ -29,7 +31,9 @@ function Employee() {
         now.getMonth() + 1
     ).padStart(2, "0")}`;
 
-    const [yearMonth, setYearMonth] = useState(currentYearMonth);
+    const [attendanceYearMonth, setAttendanceYearMonth] =
+        useState(currentYearMonth);
+    const [salaryYearMonth, setSalaryYearMonth] = useState(currentYearMonth);
     const [loading, setLoading] = useState(true);
     const [showAlertModal, setShowAlertModal] = useState(false);
     const [alertTitle, setAlertTitle] = useState("");
@@ -43,6 +47,8 @@ function Employee() {
     const [attendanceList, setAttendanceList] = useState([]);
     const [filteredAttendanceList, setFilteredAttendanceList] =
         useState(attendanceList);
+    const [salaryList, setSalaryList] = useState([]);
+    const [filteredSalaryList, setFilteredSalaryList] = useState(salaryList);
     const [employmentStatusList, setEmploymentStatusList] = useState([]);
     const [departmentList, setDepartmentList] = useState([]);
     const [teamList, setTeamList] = useState([]);
@@ -60,6 +66,7 @@ function Employee() {
 
     const [employeeSort, setEmployeeSort] = useState("employeeNumberAsc");
     const [attendanceSort, setAttendanceSort] = useState("idAsc");
+    const [salarySort, setSalarySort] = useState("idAsc");
 
     const handleCloseAlertModal = () => setShowAlertModal(false);
 
@@ -259,6 +266,26 @@ function Employee() {
         );
     }, []);
 
+    const fetchSalaryData = useCallback(async (date) => {
+        await fetchData(async () => {
+            const result = await requestSalaryList({ salaryPaymentDate: date });
+            if (result?.responseData) {
+                // 각 객체에 id 추가
+                result.responseData = result.responseData.map(
+                    (item, index) => ({
+                        ...item,
+                        id: index + 1, // 1부터 시작하는 id 부여
+                        totalSalary:
+                            item.paidBasicSalary +
+                            item.paidIncentiveSalary +
+                            item.paidBonusSalary,
+                    })
+                );
+            }
+            return result;
+        }, setSalaryList);
+    }, []);
+
     const handleAttendanceSingle = async (attendanceId) => {
         setSelectedAttendanceId(attendanceId);
         handleShowAttendanceUpdateModal();
@@ -277,8 +304,12 @@ function Employee() {
     }, [fetchEmploymentStatusData]);
 
     useEffect(() => {
-        fetchAttendanceData(yearMonth);
-    }, [yearMonth, fetchAttendanceData]);
+        fetchAttendanceData(attendanceYearMonth);
+    }, [attendanceYearMonth, fetchAttendanceData]);
+
+    useEffect(() => {
+        fetchSalaryData(salaryYearMonth);
+    }, [salaryYearMonth, fetchSalaryData]);
 
     useEffect(() => {
         fetchAttendanceStatusData();
@@ -291,6 +322,10 @@ function Employee() {
     useEffect(() => {
         setFilteredAttendanceList(attendanceList);
     }, [attendanceList]);
+
+    useEffect(() => {
+        setFilteredSalaryList(salaryList);
+    }, [salaryList]);
 
     if (loading) {
         return <Loader />; // 로딩 중일 때 표시
@@ -312,12 +347,21 @@ function Employee() {
             )}
             {view === "Attendance" && (
                 <AttendanceListSearchBox
-                    yearMonth={yearMonth}
-                    setYearMonth={setYearMonth}
+                    yearMonth={attendanceYearMonth}
+                    setYearMonth={setAttendanceYearMonth}
                     attendanceList={attendanceList}
                     setFilteredAttendanceList={setFilteredAttendanceList}
                     attendanceStatusList={attendanceStatusList}
                     setAttendanceSort={setAttendanceSort}
+                />
+            )}
+            {view === "Salary" && (
+                <SalaryListSearchBox
+                    yearMonth={salaryYearMonth}
+                    setYearMonth={setSalaryYearMonth}
+                    salaryList={salaryList}
+                    setFilteredSalaryList={setFilteredSalaryList}
+                    setSalarySort={setSalarySort}
                 />
             )}
             <Container>
@@ -376,7 +420,14 @@ function Employee() {
                     handleAttendanceSingle={handleAttendanceSingle}
                 />
             )}
-            {view === "Salary" && <SalaryListTable />}
+            {view === "Salary" && (
+                <SalaryListTable
+                    filteredSalaryList={filteredSalaryList}
+                    setFilteredSalaryList={setFilteredSalaryList}
+                    salarySort={salarySort}
+                    setSalarySort={setSalarySort}
+                />
+            )}
 
             <AlertModal
                 showAlertModal={showAlertModal}
@@ -419,7 +470,9 @@ function Employee() {
             />
             <AttendanceUpdateModal
                 showAttendancUpdateModal={showAttendancUpdateModal}
-                handleCloseAttendanceUpdateModal={handleCloseAttendanceUpdateModal}
+                handleCloseAttendanceUpdateModal={
+                    handleCloseAttendanceUpdateModal
+                }
                 selectedAttendanceId={selectedAttendanceId}
                 attendanceStatusList={attendanceStatusList}
                 updateData={fetchAttendanceData}

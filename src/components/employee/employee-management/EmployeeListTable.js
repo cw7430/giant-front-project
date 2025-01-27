@@ -92,7 +92,7 @@ function EmployeeListTable(props) {
                     <Table bordered hover>
                         <thead className="table-dark">
                             <tr>
-                                <th>
+                                <th className="text-center">
                                     {"사번"}
                                     <button
                                         className="icon-button"
@@ -125,9 +125,9 @@ function EmployeeListTable(props) {
                                         )}
                                     </button>
                                 </th>
-                                <th>{"이름"}</th>
-                                <th>{"연락처"}</th>
-                                <th>
+                                <th className="text-center">{"이름"}</th>
+                                <th className="text-center">{"연락처"}</th>
+                                <th className="text-center">
                                     {"부서"}
                                     <button
                                         className="icon-button"
@@ -160,7 +160,7 @@ function EmployeeListTable(props) {
                                         )}
                                     </button>
                                 </th>
-                                <th>
+                                <th className="text-center">
                                     {"직급"}
                                     <button
                                         className="icon-button"
@@ -187,9 +187,9 @@ function EmployeeListTable(props) {
                                         )}
                                     </button>
                                 </th>
-                                <th>{"등록일"}</th>
-                                <th>{"수정일"}</th>
-                                <th>{"재직여부"}</th>
+                                <th className="text-center">{"등록일"}</th>
+                                <th className="text-center">{"수정일"}</th>
+                                <th className="text-center">{"재직여부"}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -208,9 +208,9 @@ function EmployeeListTable(props) {
                                     <td>{employee.telNumber}</td>
                                     <td>{employee.departmentName}</td>
                                     <td>{employee.className}</td>
-                                    <td>{employee.employeeRegisterDate}</td>
-                                    <td>{employee.employeeUpdateDate || ""}</td>
-                                    <td>{employee.employmentStatusName}</td>
+                                    <td className="text-end">{employee.employeeRegisterDate}</td>
+                                    <td className="text-end">{employee.employeeUpdateDate || ""}</td>
+                                    <td className="text-center">{employee.employmentStatusName}</td>
                                 </tr>
                             ))}
                         </tbody>

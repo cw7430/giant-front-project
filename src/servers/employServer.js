@@ -24,7 +24,10 @@ export const requestUserIdDuplicateCheck = async (request) => {
 
 export const requestProfile = async (request) => {
     try {
-        const response = await axios.post(`${DOMAIN}/personal_profile`, request);
+        const response = await axios.post(
+            `${DOMAIN}/personal_profile`,
+            request
+        );
         return response.data;
     } catch (error) {
         console.error("회원정보를 가져오던 중 오류 발생:", error);
@@ -36,7 +39,7 @@ export const requestProfileList = async () => {
     try {
         const response = await axios.post(`${DOMAIN}/employee_list`);
         return response.data;
-    } catch(error) {
+    } catch (error) {
         console.error("사원 목록 불러오던 중 오류 발생:", error);
         return { result: "SE" };
     }
@@ -46,7 +49,7 @@ export const requestClassList = async () => {
     try {
         const response = await axios.post(`${DOMAIN}/class_list`);
         return response.data;
-    } catch(error) {
+    } catch (error) {
         console.error("직급 목록 불러오던 중 오류 발생:", error);
         return { result: "SE" };
     }
@@ -56,7 +59,7 @@ export const requestDepartmentList = async () => {
     try {
         const response = await axios.post(`${DOMAIN}/department_list`);
         return response.data;
-    } catch(error) {
+    } catch (error) {
         console.error("부서 목록 불러오던 중 오류 발생:", error);
         return { result: "SE" };
     }
@@ -66,7 +69,7 @@ export const requestTeamList = async () => {
     try {
         const response = await axios.post(`${DOMAIN}/team_list`);
         return response.data;
-    } catch(error) {
+    } catch (error) {
         console.error("팀 목록 불러오던 중 오류 발생:", error);
         return { result: "SE" };
     }
@@ -76,7 +79,7 @@ export const requestEmploymentStatusList = async () => {
     try {
         const response = await axios.post(`${DOMAIN}/employment_status_list`);
         return response.data;
-    } catch(error) {
+    } catch (error) {
         console.error("재직 상태 목록 불러오던 중 오류 발생:", error);
         return { result: "SE" };
     }
@@ -86,17 +89,17 @@ export const requestAttendance = async (request) => {
     try {
         const response = await axios.post(`${DOMAIN}/attendance`, request);
         return response.data;
-    } catch(error) {
+    } catch (error) {
         console.error("근태 상세보기 불러오던 중 오류 발생:", error);
         return { result: "SE" };
     }
-}
+};
 
 export const requestAttendanceList = async (request) => {
     try {
         const response = await axios.post(`${DOMAIN}/attendance_list`, request);
         return response.data;
-    } catch(error) {
+    } catch (error) {
         console.error("근태 목록 불러오던 중 오류 발생:", error);
         return { result: "SE" };
     }
@@ -106,7 +109,7 @@ export const requestAttendanceStatusList = async () => {
     try {
         const response = await axios.post(`${DOMAIN}/attendance_status_list`);
         return response.data;
-    } catch(error) {
+    } catch (error) {
         console.error("근태 상태 목록 불러오던 중 오류 발생:", error);
         return { result: "SE" };
     }
@@ -114,7 +117,10 @@ export const requestAttendanceStatusList = async () => {
 
 export const requestAttendanceDuplicateCheck = async (request) => {
     try {
-        const response = await axios.post(`${DOMAIN}/attendance_duplicate_check`, request);
+        const response = await axios.post(
+            `${DOMAIN}/attendance_duplicate_check`,
+            request
+        );
         return response.data;
     } catch (error) {
         console.error("근태 중복체크 중 오류 발생:", error);
@@ -124,7 +130,10 @@ export const requestAttendanceDuplicateCheck = async (request) => {
 
 export const requestAttendanceDuplicateCheckBulk = async (request) => {
     try {
-        const response = await axios.post(`${DOMAIN}/attendance_duplicate_check_bulk`, request);
+        const response = await axios.post(
+            `${DOMAIN}/attendance_duplicate_check_bulk`,
+            request
+        );
         return response.data;
     } catch (error) {
         console.error("근태 일괄 중복체크 중 오류 발생:", error);
@@ -132,9 +141,58 @@ export const requestAttendanceDuplicateCheckBulk = async (request) => {
     }
 };
 
+export const requestSalary = async (request) => {
+    try {
+        const response = await axios.post(`${DOMAIN}/salary`, request);
+        return response.data;
+    } catch (error) {
+        console.error("급여정보 불러오던 중 오류 발생:", error);
+        return { result: "SE" };
+    }
+};
+
+export const requestSalaryList = async (request) => {
+    try {
+        const response = await axios.post(`${DOMAIN}/salary_list`, request);
+        return response.data;
+    } catch (error) {
+        console.error("급여목록 불러오던 중 오류 발생:", error);
+        return { result: "SE" };
+    }
+};
+
+export const requestSalaryDuplicateCheck = async (request) => {
+    try {
+        const response = await axios.post(
+            `${DOMAIN}/salary_duplicate_check`,
+            request
+        );
+        return response.data;
+    } catch (error) {
+        console.error("급여중복체크 중 오류 발생:", error);
+        return { result: "SE" };
+    }
+};
+
+export const requestSalaryDuplicateCheckBulk = async (request) => {
+    try {
+        const response = await axios.post(
+            `${DOMAIN}/salary_duplicate_check_bulk`,
+            request
+        );
+        return response.data;
+    } catch (error) {
+        console.error("급여 일괄 중복체크 중 오류 발생:", error);
+        return { result: "SE" };
+    }
+};
+
 export const requestRegisterEmployee = async (request) => {
     try {
-        const response = await axios.post(`${DOMAIN}/register_employee`, request);
+        const response = await axios.post(
+            `${DOMAIN}/register_employee`,
+            request
+        );
         return response.data;
     } catch (error) {
         console.error("사원 등록 중 오류 발생:", error);
@@ -156,7 +214,7 @@ export const requestChangeUserId = async (request) => {
     try {
         const response = await axios.post(`${DOMAIN}/change_userId`, request);
         return response.data;
-    } catch(error) {
+    } catch (error) {
         console.error("아이디 변경 중 오류 발생:", error);
         return { result: "SE" };
     }
@@ -166,7 +224,7 @@ export const requestChangePassword = async (request) => {
     try {
         const response = await axios.post(`${DOMAIN}/change_password`, request);
         return response.data;
-    } catch(error) {
+    } catch (error) {
         console.error("비밀번호 변경 중 오류 발생:", error);
         return { result: "SE" };
     }
@@ -174,9 +232,12 @@ export const requestChangePassword = async (request) => {
 
 export const requestRegisterAttendance = async (request) => {
     try {
-        const response = await axios.post(`${DOMAIN}/register_attendance`, request);
+        const response = await axios.post(
+            `${DOMAIN}/register_attendance`,
+            request
+        );
         return response.data;
-    } catch(error) {
+    } catch (error) {
         console.error("근태 등록 중 오류 발생:", error);
         return { result: "SE" };
     }
@@ -184,9 +245,12 @@ export const requestRegisterAttendance = async (request) => {
 
 export const requestRegisterAttendanceMultiple = async (request) => {
     try {
-        const response = await axios.post(`${DOMAIN}/register_attendances_multiple`, request);
+        const response = await axios.post(
+            `${DOMAIN}/register_attendances_multiple`,
+            request
+        );
         return response.data;
-    } catch(error) {
+    } catch (error) {
         console.error("근태 다중 등록 중 오류 발생:", error);
         return { result: "SE" };
     }
@@ -194,9 +258,45 @@ export const requestRegisterAttendanceMultiple = async (request) => {
 
 export const requestUpdateAttendance = async (request) => {
     try {
-        const response = await axios.post(`${DOMAIN}/update_attendances`, request);
+        const response = await axios.post(
+            `${DOMAIN}/update_attendances`,
+            request
+        );
         return response.data;
-    } catch(error) {
+    } catch (error) {
+        console.error("근태 수정 중 오류 발생:", error);
+        return { result: "SE" };
+    }
+};
+
+export const requestRegisterSalary = async (request) => {
+    try {
+        const response = await axios.post(`${DOMAIN}/register_salary`, request);
+        return response.data;
+    } catch (error) {
+        console.error("근태 수정 중 오류 발생:", error);
+        return { result: "SE" };
+    }
+};
+
+export const requestRegisterSalaryMultiple = async (request) => {
+    try {
+        const response = await axios.post(
+            `${DOMAIN}/register_salaries_multiple`,
+            request
+        );
+        return response.data;
+    } catch (error) {
+        console.error("근태 수정 중 오류 발생:", error);
+        return { result: "SE" };
+    }
+};
+
+export const requestUpdateSalary = async (request) => {
+    try {
+        const response = await axios.post(`${DOMAIN}/update_salary`, request);
+        return response.data;
+    } catch (error) {
         console.error("근태 수정 중 오류 발생:", error);
         return { result: "SE" };
     }
