@@ -19,6 +19,7 @@ import {
     requestAttendanceDuplicateCheckBulk,
     requestRegisterAttendanceMultiple,
 } from "../../../servers/employServer";
+import Loader from "../../../util/Loader";
 
 const parseTimeToMinutes = (time) => {
     const [hours, minutes] = time.split(":").map(Number);
@@ -325,6 +326,7 @@ function AttendanceBulkModal(props) {
                                 id="datePicker"
                                 selectedDate={commuteDate}
                                 onDateChange={setCommuteDate}
+                                minDate="2024-10-02"
                             />
                         </Form.Group>
                         <Row className="mb-3">
@@ -394,7 +396,7 @@ function AttendanceBulkModal(props) {
                     <Modal.Body>
                         <Row className="d-flex justify-content-center align-items-center">
                             <Form.Text className="text-info">
-                                {"등록중..."}
+                                <Loader />
                             </Form.Text>
                         </Row>
                     </Modal.Body>

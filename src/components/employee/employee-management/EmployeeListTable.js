@@ -92,7 +92,7 @@ function EmployeeListTable(props) {
                     <Table bordered hover>
                         <thead className="table-dark">
                             <tr>
-                                <th className="text-center">
+                                <th className="text-center" style={{ width: "10%" }}>
                                     {"사번"}
                                     <button
                                         className="icon-button"
@@ -125,9 +125,9 @@ function EmployeeListTable(props) {
                                         )}
                                     </button>
                                 </th>
-                                <th className="text-center">{"이름"}</th>
-                                <th className="text-center">{"연락처"}</th>
-                                <th className="text-center">
+                                <th className="text-center" style={{ width: "11%" }}>{"이름"}</th>
+                                <th className="text-center" style={{ width: "15%" }}>{"연락처"}</th>
+                                <th className="text-center" style={{ width: "15%" }}>
                                     {"부서"}
                                     <button
                                         className="icon-button"
@@ -160,7 +160,7 @@ function EmployeeListTable(props) {
                                         )}
                                     </button>
                                 </th>
-                                <th className="text-center">
+                                <th className="text-center" style={{ width: "10%" }}>
                                     {"직급"}
                                     <button
                                         className="icon-button"
@@ -187,9 +187,9 @@ function EmployeeListTable(props) {
                                         )}
                                     </button>
                                 </th>
-                                <th className="text-center">{"등록일"}</th>
-                                <th className="text-center">{"수정일"}</th>
-                                <th className="text-center">{"재직여부"}</th>
+                                <th className="text-center" style={{ width: "15%"}}>{"등록일"}</th>
+                                <th className="text-center" style={{ width: "15%"}}>{"수정일"}</th>
+                                <th className="text-center" style={{ width: "9%"}}>{"재직여부"}</th>
                             </tr>
                         </thead>
                         <tbody>

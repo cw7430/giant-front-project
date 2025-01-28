@@ -94,6 +94,7 @@ function MyProfile() {
             />
             <Container className="my-5">
                 <h1 className="text-center mb-4">마이페이지</h1>
+                {!userProfile&&(<Loader />)}
                 <Row className="justify-content-center mb-3">
                     <Col xs={12} md={8} lg={6}>
                         <div className="border p-3 rounded">

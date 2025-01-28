@@ -24,6 +24,7 @@ import AttendanceListSearchBox from "./attendance-management/AttendanceListSearc
 import AttendanceModal from "./attendance-management/AttendanceModal";
 import AttendanceUpdateModal from "./attendance-management/AttendanceUpdateModal";
 import SalaryListSearchBox from "./salary-management/SalaryListSearchBox";
+import SalaryModal from "./salary-management/SalaryModal";
 
 function Employee() {
     const now = new Date();
@@ -63,6 +64,7 @@ function Employee() {
         useState(false);
     const [showAttendancUpdateModal, setShowAttendancUpdateModal] =
         useState(false);
+    const [showSalaryModal, setShowSalaryModal] = useState(false);
 
     const [employeeSort, setEmployeeSort] = useState("employeeNumberAsc");
     const [attendanceSort, setAttendanceSort] = useState("idAsc");
@@ -103,6 +105,10 @@ function Employee() {
 
     const handleCloseAttendanceUpdateModal = () =>
         setShowAttendancUpdateModal(false);
+
+    const handleShowSalaryModal = () => setShowSalaryModal(true);
+
+    const handleCloseSalaryModal = () => setShowSalaryModal(false);
 
     const toggleRegisterButton = () => {
         const authorityCode = sessionStorage.getItem("authorityCode");
@@ -229,7 +235,7 @@ function Employee() {
 
     const fetchAttendanceData = useCallback(async (date) => {
         await fetchData(async () => {
-            const result = await requestAttendanceList({ commuteDate: date });
+            const result = await requestAttendanceList({ searchOrder:"all", commuteDate: date });
             if (result?.responseData) {
                 // 각 객체에 id 추가
                 result.responseData = result.responseData.map(
@@ -327,10 +333,6 @@ function Employee() {
         setFilteredSalaryList(salaryList);
     }, [salaryList]);
 
-    if (loading) {
-        return <Loader />; // 로딩 중일 때 표시
-    }
-
     return (
         <div className="d-flex flex-column min-vh-100 p-3">
             <Container className="my-5">
@@ -364,6 +366,7 @@ function Employee() {
                     setSalarySort={setSalarySort}
                 />
             )}
+            {loading && <Loader /> /*로딩 중일 때 표시*/}
             <Container>
                 <Row className="justify-content-between">
                     <Col xs={9} className="d-flex">
@@ -441,6 +444,7 @@ function Employee() {
                 handleCloseEmployeeSelectModal={handleCloseEmployeeSelectModal}
                 handleShowAttendanceModal={handleShowAttendanceModal}
                 handleShowAttendanceBulkModal={handleShowAttendanceBulkModal}
+                handleShowSalaryModal={handleShowSalaryModal}
             />
             <RegisterEmployeeModal
                 showRegisterModal={showRegisterModal}
@@ -477,6 +481,13 @@ function Employee() {
                 attendanceStatusList={attendanceStatusList}
                 updateData={fetchAttendanceData}
                 currentYearMonth={currentYearMonth}
+            />
+            <SalaryModal
+                showSalaryModal={showSalaryModal}
+                handleCloseSalaryModal={handleCloseSalaryModal}
+                existingEmployeeList={existingEmployeeList}
+                classList={classList}
+                updateData={fetchSalaryData}
             />
         </div>
     );

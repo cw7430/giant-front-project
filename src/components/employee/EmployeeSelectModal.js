@@ -7,10 +7,12 @@ function EmployeeSelectModal(props) {
         handleCloseEmployeeSelectModal,
         handleShowAttendanceModal,
         handleShowAttendanceBulkModal,
+        handleShowSalaryModal,
     } = props;
 
     const toggleSingleButton = () => {
         if (view === "Attendance") handleShowAttendanceModal();
+        if (view === "Salary") handleShowSalaryModal();
         handleCloseEmployeeSelectModal();
     }
 

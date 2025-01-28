@@ -15,3 +15,15 @@
 .icon-button:hover #caret-down-fill {
     fill: lightgray;
 }
+
+.react-datepicker__week .saturday {
+    color: rgba(11, 94, 215, 1) !important;
+}
+
+.react-datepicker__week .sunday {
+    color: rgba(187, 45, 59, 1) !important;
+}
+
+.react-datepicker__week .react-datepicker__day--disabled {
+    color: #ccc !important;
+}

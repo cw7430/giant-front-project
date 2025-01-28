@@ -13,15 +13,6 @@ const formatCurrency = (value) => {
     return new Intl.NumberFormat("ko-KR").format(value) + "원";
 };
 
-const formatDateToYearMonth = (dateString) => {
-    const date = new Date(dateString);
-    if (isNaN(date)) return dateString; // 유효하지 않은 날짜 처리
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
-        2,
-        "0"
-    )}`;
-};
-
 function SalaryListTable(props) {
     const {
         filteredSalaryList,
@@ -84,7 +75,7 @@ function SalaryListTable(props) {
                     <Table bordered hover>
                         <thead className="table-dark">
                             <tr>
-                                <th className="text-center">
+                                <th className="text-center" style={{ width: "8%" }}>
                                     {"번호"}
                                     <button
                                         className="icon-button"
@@ -111,7 +102,7 @@ function SalaryListTable(props) {
                                         )}
                                     </button>
                                 </th>
-                                <th className="text-center">
+                                <th className="text-center" style={{ width: "10%" }}>
                                     {"사번"}
                                     <button
                                         className="icon-button"
@@ -142,9 +133,9 @@ function SalaryListTable(props) {
                                         )}
                                     </button>
                                 </th>
-                                <th className="text-center">{"이름"}</th>
-                                <th className="text-center">{"출근일수"}</th>
-                                <th className="text-center">
+                                <th className="text-center" style={{ width: "13%" }}>{"이름"}</th>
+                                <th className="text-center" style={{ width: "9%" }}>{"출근일수"}</th>
+                                <th className="text-center" style={{ width: "15%" }}>
                                     {"최종급여"}
                                     <button
                                         className="icon-button"
@@ -171,8 +162,8 @@ function SalaryListTable(props) {
                                         )}
                                     </button>
                                 </th>
-                                <th className="text-center">{"산정기간"}</th>
-                                <th className="text-center">{"지급일"}</th>
+                                <th className="text-center" style={{ width: "20%" }}>{"산정기간"}</th>
+                                <th className="text-center" style={{ width: "10%" }}>{"지급일"}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -195,9 +186,7 @@ function SalaryListTable(props) {
                                         {formatCurrency(salary.totalSalary)}
                                     </td>
                                     <td className="text-end">
-                                        {formatDateToYearMonth(
-                                            salary.salaryPeriodDateStart
-                                        )}
+                                        {`${salary.salaryPeriodDateStart} ~ ${salary.salaryPeriodDateEnd}`}
                                     </td>
                                     <td className="text-end">
                                         {salary.salaryPaymentDate}

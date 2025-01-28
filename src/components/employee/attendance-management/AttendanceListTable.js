@@ -98,7 +98,10 @@ function AttandanceListTable(props) {
                     <Table bordered hover>
                         <thead className="table-dark">
                             <tr>
-                                <th className="text-center">
+                                <th
+                                    className="text-center"
+                                    style={{ width: "10%" }}
+                                >
                                     {"번호"}
                                     <button
                                         className="icon-button"
@@ -125,7 +128,10 @@ function AttandanceListTable(props) {
                                         )}
                                     </button>
                                 </th>
-                                <th className="text-center">
+                                <th
+                                    className="text-center"
+                                    style={{ width: "10%" }}
+                                >
                                     {"사번"}
                                     <button
                                         className="icon-button"
@@ -158,8 +164,16 @@ function AttandanceListTable(props) {
                                         )}
                                     </button>
                                 </th>
-                                <th className="text-center">{"이름"}</th>
-                                <th className="text-center">
+                                <th
+                                    className="text-center"
+                                    style={{ width: "10%" }}
+                                >
+                                    {"이름"}
+                                </th>
+                                <th
+                                    className="text-center"
+                                    style={{ width: "15%" }}
+                                >
                                     {"날짜"}
                                     <button
                                         className="icon-button"
@@ -187,9 +201,22 @@ function AttandanceListTable(props) {
                                         )}
                                     </button>
                                 </th>
-                                <th className="text-center">{"출근시간"}</th>
-                                <th className="text-center">{"퇴근시간"}</th>
-                                <th className="text-center">
+                                <th
+                                    className="text-center"
+                                    style={{ width: "10%" }}
+                                >
+                                    {"출근시간"}
+                                </th>
+                                <th
+                                    className="text-center"
+                                    style={{ width: "10%" }}
+                                >
+                                    {"퇴근시간"}
+                                </th>
+                                <th
+                                    className="text-center"
+                                    style={{ width: "11%" }}
+                                >
                                     {"근태상태"}
                                     <button
                                         className="icon-button"
@@ -222,7 +249,12 @@ function AttandanceListTable(props) {
                                         )}
                                     </button>
                                 </th>
-                                <th className="text-center">{"비고"}</th>
+                                <th
+                                    className="text-center"
+                                    style={{ width: "24%" }}
+                                >
+                                    {"비고"}
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -239,7 +271,9 @@ function AttandanceListTable(props) {
                                     <td>{attendance.id}</td>
                                     <td>{attendance.employeeNumber}</td>
                                     <td>{attendance.employeeName}</td>
-                                    <td className="text-end">{attendance.commuteDate}</td>
+                                    <td className="text-end">
+                                        {attendance.commuteDate}
+                                    </td>
                                     <td className="text-end">
                                         {attendance.commuteTime
                                             ?.split(":")
@@ -252,7 +286,9 @@ function AttandanceListTable(props) {
                                             .slice(0, 2)
                                             .join(":")}
                                     </td>
-                                    <td className="text-center">{attendance.attendanceStatusName}</td>
+                                    <td className="text-center">
+                                        {attendance.attendanceStatusName}
+                                    </td>
                                     <td>{attendance.attendanceRemark}</td>
                                 </tr>
                             ))}

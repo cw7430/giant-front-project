@@ -244,6 +244,7 @@ function AttendanceModal(props) {
                                             e.target.value
                                         )
                                     }
+                                    readOnly={true}
                                 />
                             </Col>
                             <Col xs={2}>
@@ -296,6 +297,7 @@ function AttendanceModal(props) {
                             id="datePicker"
                             selectedDate={commuteDate}
                             onDateChange={setCommuteDate}
+                            minDate="2024-10-02"
                         />
                     </Form.Group>
                     <Row className="mb-3">

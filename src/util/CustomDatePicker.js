@@ -133,13 +133,27 @@ function TimeSelect(props) {
 }
 
 export function SingleDatePicker(props) {
-    const { selectedDate, onDateChange } = props;
+    const { selectedDate, onDateChange, minDate } = props;
+
+    const [minYear, minMonth] = minDate.split("-").map(Number);
+
     const years = range(2024, getYear(new Date()) + 1, 1);
 
     const months = Array.from(
         { length: 12 },
         (_, i) => `${String(i + 1).padStart(2, "0")}월`
     );
+
+    const [selectedYear, setSelectedYear] = useState(getYear(new Date()));
+    const [selectedMonth, setSelectedMonth] = useState(getMonth(new Date()));
+
+    // 선택된 연도와 월에 따라 날짜 활성화
+    const filterDateBySelectedMonth = (date) => {
+        return (
+            date.getFullYear() === selectedYear &&
+            date.getMonth() === selectedMonth
+        );
+    };
 
     return (
         <InputGroup>
@@ -163,12 +177,14 @@ export function SingleDatePicker(props) {
 
                     const currentYear = getYear(date);
                     const currentMonth = getMonth(date);
+                    const today = new Date();
 
                     const availableMonths =
-                        currentYear === 2024
-                            ? months.slice(9) // 10월부터 12월까지
-                            : months; // 모든 월
-
+                        currentYear === minYear
+                            ? months.slice(minMonth - 1)
+                            : currentYear === getYear(today)
+                            ? months.slice(0, getMonth(today) + 1)
+                            : months;
                     return (
                         <Container>
                             <Row className="justify-content-center">
@@ -178,11 +194,23 @@ export function SingleDatePicker(props) {
                                 >
                                     <button
                                         className="icon-button"
-                                        onClick={decreaseMonth}
+                                        onClick={() => {
+                                            decreaseMonth();
+                                            setSelectedMonth(
+                                                currentMonth - 1 >= 0
+                                                    ? currentMonth - 1
+                                                    : 11
+                                            );
+                                            if (currentMonth === 0) {
+                                                setSelectedYear(
+                                                    currentYear - 1
+                                                );
+                                            }
+                                        }}
                                         disabled={
                                             prevMonthButtonDisabled ||
-                                            (currentYear === 2024 &&
-                                                currentMonth === 9)
+                                            (currentYear === minYear &&
+                                                currentMonth === minMonth - 1)
                                         }
                                     >
                                         <CaretLeftFill />
@@ -196,14 +224,15 @@ export function SingleDatePicker(props) {
                                         value={currentYear}
                                         onChange={({ target: { value } }) => {
                                             const newYear = parseInt(value, 10);
+                                            setSelectedYear(newYear);
                                             changeYear(newYear);
 
-                                            // 2024년으로 변경 시, 월을 10월로 제한
                                             if (
-                                                newYear === 2024 &&
-                                                getMonth(date) < 9
+                                                newYear === minYear &&
+                                                getMonth(date) < minMonth - 1
                                             ) {
-                                                changeMonth(9);
+                                                setSelectedMonth(minMonth - 1);
+                                                changeMonth(minMonth - 1);
                                             }
                                         }}
                                     >
@@ -223,6 +252,7 @@ export function SingleDatePicker(props) {
                                         onChange={({ target: { value } }) => {
                                             const newMonthIndex =
                                                 months.indexOf(value);
+                                            setSelectedMonth(newMonthIndex);
                                             changeMonth(newMonthIndex);
                                         }}
                                     >
@@ -239,7 +269,19 @@ export function SingleDatePicker(props) {
                                 >
                                     <button
                                         className="icon-button"
-                                        onClick={increaseMonth}
+                                        onClick={() => {
+                                            increaseMonth();
+                                            setSelectedMonth(
+                                                currentMonth + 1 <= 11
+                                                    ? currentMonth + 1
+                                                    : 0
+                                            );
+                                            if (currentMonth === 11) {
+                                                setSelectedYear(
+                                                    currentYear + 1
+                                                );
+                                            }
+                                        }}
                                         disabled={nextMonthButtonDisabled}
                                     >
                                         <CaretRightFill />
@@ -252,8 +294,15 @@ export function SingleDatePicker(props) {
                 selected={selectedDate}
                 onChange={(date) => onDateChange(date)}
                 customInput={<CustomInput />}
-                minDate={new Date("2024-10-02")}
+                minDate={new Date(minDate)}
                 maxDate={new Date()}
+                filterDate={filterDateBySelectedMonth} // 필터 조건 추가
+                dayClassName={(date) => {
+                    const day = date.getDay();
+                    if (day === 6) return "saturday";
+                    if (day === 0) return "sunday";
+                    return undefined;
+                }}
             />
         </InputGroup>
     );
