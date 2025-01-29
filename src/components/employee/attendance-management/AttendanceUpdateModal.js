@@ -12,21 +12,7 @@ import {
 import AlertModal from "../../modals/AlertModal";
 import ConfirmModal from "../../modals/ConfirmModal";
 import Loader from "../../../util/Loader";
-
-const parseTimeToMinutes = (time) => {
-    const [hours, minutes] = time.split(":").map(Number);
-    return hours * 60 + minutes;
-};
-
-const addMinutesToTime = (time, minutesToAdd) => {
-    const totalMinutes = parseTimeToMinutes(time) + minutesToAdd;
-    const hours = Math.floor(totalMinutes / 60) % 24;
-    const minutes = totalMinutes % 60;
-    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
-        2,
-        "0"
-    )}`;
-};
+import { dateFormatter, timeFormatter, parseTimeToMinutes, addMinutesToTime } from "../../../util/formatter";
 
 function AttendanceUpdateModal(props) {
     const {
@@ -209,17 +195,12 @@ function AttendanceUpdateModal(props) {
     const handleSubmit = async () => {
         handleCloseConfirmModal();
 
-        const formattedCommuteDate =
-            commuteDate instanceof Date
-                ? commuteDate.toISOString().split("T")[0]
-                : new Date(commuteDate).toISOString().split("T")[0];
-
         const submitData = {
             attendanceId: selectedAttendanceId,
             employeeNumber: attendance.employeeNumber,
-            commuteDate: formattedCommuteDate,
-            commuteTime: commuteTime?.split(":").slice(0, 2).join(":"),
-            quitTime: quitTime?.split(":").slice(0, 2).join(":"),
+            commuteDate: dateFormatter(commuteDate),
+            commuteTime: timeFormatter(commuteTime),
+            quitTime: timeFormatter(quitTime),
             attendanceStatusCode: attendanceStatus,
             attendanceRemark: attendanceRemark,
         };
@@ -429,11 +410,9 @@ function AttendanceUpdateModal(props) {
                 handleCloseConfirmModal={handleCloseConfirmModal}
                 handleConfirm={handleSubmit}
                 confirmTitle={"확인"}
-                confirmText={`${
-                    commuteDate instanceof Date
-                        ? commuteDate.toISOString().split("T")[0]
-                        : new Date(commuteDate).toISOString().split("T")[0]
-                } 근태 정보를 수정하시겠습니까?`}
+                confirmText={`${dateFormatter(
+                    commuteDate
+                )} 근태 정보를 수정하시겠습니까?`}
             />
             <AlertModal
                 showAlertModal={showAlertModal}

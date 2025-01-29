@@ -9,6 +9,7 @@ import {
     CaretLeftFill,
     CaretRightFill,
 } from "../assets/svg/Svgs";
+import { timeFormatter } from "./formatter";
 
 const range = (start, end, step = 1) => {
     const length = Math.ceil((end - start) / step);
@@ -29,12 +30,6 @@ const CustomInput = React.forwardRef((props, ref) => {
         />
     );
 });
-
-const formatTime = (time) => {
-    if (!time || typeof time !== "string") return "";
-    const parts = time.split(":");
-    return parts.slice(0, 2).join(":");
-};
 
 function TimeSelect(props) {
     const { selectedTime, setSelectedTime, closeTimeSelect } = props;
@@ -311,7 +306,7 @@ export function SingleDatePicker(props) {
 export function SingleTimePicker(props) {
     const { selectedTime, setSelectedTime, disabled } = props;
 
-    const formatedTime = formatTime(selectedTime);
+    const formatedTime = timeFormatter(selectedTime);
 
     const [showTimeSelect, setShowTimeSelect] = useState(false);
 

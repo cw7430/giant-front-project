@@ -11,21 +11,11 @@ import {
     requestAttendanceDuplicateCheck,
     requestRegisterAttendance,
 } from "../../../servers/employServer";
-
-const parseTimeToMinutes = (time) => {
-    const [hours, minutes] = time.split(":").map(Number);
-    return hours * 60 + minutes;
-};
-
-const addMinutesToTime = (time, minutesToAdd) => {
-    const totalMinutes = parseTimeToMinutes(time) + minutesToAdd;
-    const hours = Math.floor(totalMinutes / 60) % 24;
-    const minutes = totalMinutes % 60;
-    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
-        2,
-        "0"
-    )}`;
-};
+import {
+    dateFormatter,
+    parseTimeToMinutes,
+    addMinutesToTime,
+} from "../../../util/formatter";
 
 function AttendanceModal(props) {
     const {
@@ -175,7 +165,7 @@ function AttendanceModal(props) {
             setEmployeeNumberErrorMessage("");
             const attendanceData = {
                 employeeNumber: selectedEmployeeNumber,
-                commuteDate: commuteDate.toISOString().split("T")[0],
+                commuteDate: dateFormatter(commuteDate),
                 commuteTime: commuteTime,
                 quitTime: quitTime,
                 attendanceStatusCode: attendanceStatus,
@@ -398,9 +388,9 @@ function AttendanceModal(props) {
                 handleCloseConfirmModal={handleCloseConfirmModal}
                 handleConfirm={handleSubmit}
                 confirmTitle={"확인"}
-                confirmText={`${
-                    commuteDate.toISOString().split("T")[0]
-                } 근태 정보를 등록하시겠습니까?`}
+                confirmText={`${dateFormatter(
+                    commuteDate
+                )} 근태 정보를 등록하시겠습니까?`}
             />
             <AlertModal
                 showAlertModal={showAlertModal}

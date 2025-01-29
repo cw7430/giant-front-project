@@ -20,21 +20,11 @@ import {
     requestRegisterAttendanceMultiple,
 } from "../../../servers/employServer";
 import Loader from "../../../util/Loader";
-
-const parseTimeToMinutes = (time) => {
-    const [hours, minutes] = time.split(":").map(Number);
-    return hours * 60 + minutes;
-};
-
-const addMinutesToTime = (time, minutesToAdd) => {
-    const totalMinutes = parseTimeToMinutes(time) + minutesToAdd;
-    const hours = Math.floor(totalMinutes / 60) % 24;
-    const minutes = totalMinutes % 60;
-    return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
-        2,
-        "0"
-    )}`;
-};
+import {
+    dateFormatter,
+    parseTimeToMinutes,
+    addMinutesToTime,
+} from "../../../util/formatter";
 
 function AttendanceBulkModal(props) {
     const {
@@ -194,7 +184,7 @@ function AttendanceBulkModal(props) {
             // 오브젝트 배열 생성
             const attendanceData = filteredEmployees.map((employee) => ({
                 employeeNumber: employee.employeeNumber,
-                commuteDate: commuteDate.toISOString().split("T")[0],
+                commuteDate:  dateFormatter(commuteDate),
                 commuteTime: commuteTime,
                 quitTime: quitTime,
                 attendanceStatusCode: attendanceStatus,
@@ -432,9 +422,9 @@ function AttendanceBulkModal(props) {
                 handleCloseConfirmModal={handleCloseConfirmModal}
                 handleConfirm={handleSubmit}
                 confirmTitle={"확인"}
-                confirmText={`${
-                    commuteDate.toISOString().split("T")[0]
-                } 근태 정보를 일괄 등록하시겠습니까?`}
+                confirmText={`${dateFormatter(
+                    commuteDate
+                )} 근태 정보를 일괄 등록하시겠습니까?`}
             />
             <AlertModal
                 showAlertModal={showAlertModal}

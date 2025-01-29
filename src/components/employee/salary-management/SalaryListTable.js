@@ -8,10 +8,7 @@ import {
     CaretDown,
     CaretDownFill,
 } from "../../../assets/svg/Svgs";
-
-const formatCurrency = (value) => {
-    return new Intl.NumberFormat("ko-KR").format(value) + "원";
-};
+import { formatCurrency } from "../../../util/formatter";
 
 function SalaryListTable(props) {
     const {
@@ -183,7 +180,7 @@ function SalaryListTable(props) {
                                         }일`}
                                     </td>
                                     <td className="text-end">
-                                        {formatCurrency(salary.totalSalary)}
+                                        {`${formatCurrency(salary.totalSalary)}원`}
                                     </td>
                                     <td className="text-end">
                                         {`${salary.salaryPeriodDateStart} ~ ${salary.salaryPeriodDateEnd}`}
