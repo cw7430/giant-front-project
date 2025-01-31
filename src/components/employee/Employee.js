@@ -483,7 +483,6 @@ function Employee() {
                 currentYearMonth={currentYearMonth}
             />
             <SalaryModal
-                yearMonth={attendanceYearMonth}
                 showSalaryModal={showSalaryModal}
                 handleCloseSalaryModal={handleCloseSalaryModal}
                 existingEmployeeList={existingEmployeeList}

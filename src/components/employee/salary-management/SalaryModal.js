@@ -20,11 +20,18 @@ function SalaryModal(props) {
     const {
         showSalaryModal,
         handleCloseSalaryModal,
-        yearMonth,
         existingEmployeeList,
         classList,
         updateData,
     } = props;
+
+    const now = new Date();
+    const prevMonthDate = new Date(now.getFullYear(), now.getMonth() - 1);
+    const maxYear = prevMonthDate.getFullYear();
+    const maxMonth = prevMonthDate.getMonth() + 1;
+    const yearMonth = `${prevMonthDate.getFullYear()}-${String(
+        prevMonthDate.getMonth() + 1
+    ).padStart(2, "0")}`;
 
     const currentYear = new Date().getFullYear();
     const currentMonth = new Date().getMonth() + 1;
@@ -54,8 +61,11 @@ function SalaryModal(props) {
     const [paidBasicSalary, setPaidBasicSalary] = useState(0);
     const [formattedBasicSalary, setFormattedBasicSalary] = useState("0");
     const [paidIncentiveSalary, setPaidIncentiveSalary] = useState(0);
-    const [formattedIncentiveSalary, setFormattedIncentiveSalary] = useState("0");
+    const [formattedIncentiveSalary, setFormattedIncentiveSalary] =
+        useState("0");
     const [paidBonusSalary, setPaidBonusSalary] = useState(0);
+    const [formattedBonusSalary, setFormattedBonusSalary] = useState("0");
+    const [totalSalary, setTotalSalary] = useState("0");
 
     const [employeeNumberError, setEmployeeNumberError] = useState(false);
     const [employeeNumberErrorMessage, setEmployeeNumberErrorMessage] =
@@ -86,7 +96,7 @@ function SalaryModal(props) {
 
     const generateYearOptions = () => {
         return Array.from(
-            { length: currentYear - 2024 + 1 },
+            { length: maxYear - 2024 + 1 },
             (_, index) => 2024 + index
         ).map((year) => (
             <option key={year} value={year}>
@@ -99,8 +109,8 @@ function SalaryModal(props) {
         const startMonth = selectedYear === "2024" ? 10 : 1;
         let totalMonths;
 
-        if (selectedYear === currentYear.toString()) {
-            totalMonths = currentMonth - startMonth + 1;
+        if (selectedYear === maxYear.toString()) {
+            totalMonths = maxMonth - startMonth + 1;
         } else {
             totalMonths = 12 - startMonth + 1;
         }
@@ -238,13 +248,24 @@ function SalaryModal(props) {
         }
     };
 
+    const handleBonusSalaryChange = (e) => {
+        let value = e.target.value.replace(/,/g, ""); // 입력된 값에서 , 제거
+        if (!isNaN(value) && value !== "") {
+            const numericValue = parseInt(value, 10);
+            setPaidBonusSalary(numericValue);
+            setFormattedBonusSalary(formatCurrency(numericValue));
+        } else {
+            setPaidBonusSalary(0);
+            setFormattedBonusSalary("0");
+        }
+    };
+
     const handleReset = useCallback(() => {
         setSelectedYear(initialYear);
         setSelectedMonth(initialMonth);
         setIsCalculated(false);
         setSalaryPeriodDateStart("");
         setSalaryPeriodDateEnd("");
-        setSalaryPaymentDate(new Date());
         setCommuteDays(0);
         setLateCommuteDays(0);
         setEarlyDepartureDays(0);
@@ -255,6 +276,7 @@ function SalaryModal(props) {
         setPaidIncentiveSalary(0);
         setFormattedIncentiveSalary("0");
         setPaidBonusSalary(0);
+        setTotalSalary(0);
         setEmployeeNumberError(false);
         setEmployeeNumberErrorMessage("");
         setCommuteDateError(false);
@@ -263,6 +285,7 @@ function SalaryModal(props) {
 
     useEffect(() => {
         if (!showSalaryModal) {
+            setSalaryPaymentDate(new Date());
             setSelectedEmployeeNumber("");
             handleReset();
         }
@@ -274,6 +297,13 @@ function SalaryModal(props) {
         }
     }, [selectedEmployeeNumber, handleReset]);
 
+    useEffect(() => {
+        setTotalSalary(
+            formatCurrency(
+                paidBasicSalary + paidIncentiveSalary + paidBonusSalary
+            )
+        );
+    }, [paidBasicSalary, paidIncentiveSalary, paidBonusSalary]);
     return (
         <>
             <Modal
@@ -285,6 +315,15 @@ function SalaryModal(props) {
                     <Modal.Title>{"급여 등록"}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    <Form.Group className="mb-3">
+                        <Form.Label htmlFor="datePicker">{"지급일"}</Form.Label>
+                        <SingleDatePicker
+                            id="datePicker"
+                            selectedDate={salaryPaymentDate}
+                            onDateChange={setSalaryPaymentDate}
+                            minDate="2024-11-01"
+                        />
+                    </Form.Group>
                     <Form.Group className="mt-3 mb-3">
                         <Form.Label htmlFor="employeeNumber">
                             {"사번"}
@@ -360,9 +399,7 @@ function SalaryModal(props) {
                     )}
                     {loading && <Loader />}
                     <Form.Group className="mb-3">
-                        <Form.Label htmlFor="salaryPeriod">
-                            {"기간"}
-                        </Form.Label>
+                        <Form.Label htmlFor="salaryPeriod">{"기간"}</Form.Label>
                         <Row id="salaryPeriod">
                             <Col>
                                 <Form.Control
@@ -373,6 +410,7 @@ function SalaryModal(props) {
                                         setSalaryPeriodDateStart(e.target.value)
                                     }
                                     readOnly={true}
+                                    disabled={!isCalculated}
                                 />
                             </Col>
                             <Col>
@@ -384,6 +422,7 @@ function SalaryModal(props) {
                                         setSalaryPeriodDateEnd(e.target.value)
                                     }
                                     readOnly={true}
+                                    disabled={!isCalculated}
                                 />
                             </Col>
                         </Row>
@@ -400,12 +439,12 @@ function SalaryModal(props) {
                                 >
                                     <Form.Control
                                         type="text"
-                                        id="commuteDays"
                                         value={commuteDays}
                                         onChange={(e) =>
                                             setCommuteDays(e.target.value)
                                         }
                                         readOnly={true}
+                                        disabled={!isCalculated}
                                     />
                                 </FloatingLabel>
                             </Col>
@@ -416,7 +455,6 @@ function SalaryModal(props) {
                                 >
                                     <Form.Control
                                         type="text"
-                                        id="lateCommuteDays"
                                         value={
                                             lateCommuteDays +
                                             combinedLateEarlyDays
@@ -425,6 +463,7 @@ function SalaryModal(props) {
                                             setLateCommuteDays(e.target.value)
                                         }
                                         readOnly={true}
+                                        disabled={!isCalculated}
                                     />
                                 </FloatingLabel>
                             </Col>
@@ -435,7 +474,6 @@ function SalaryModal(props) {
                                 >
                                     <Form.Control
                                         type="text"
-                                        id="earlyDepartureDays"
                                         value={
                                             earlyDepartureDays +
                                             combinedLateEarlyDays
@@ -446,6 +484,7 @@ function SalaryModal(props) {
                                             )
                                         }
                                         readOnly={true}
+                                        disabled={!isCalculated}
                                     />
                                 </FloatingLabel>
                             </Col>
@@ -456,12 +495,92 @@ function SalaryModal(props) {
                                 >
                                     <Form.Control
                                         type="text"
-                                        id="absentDays"
                                         value={absentDays}
                                         onChange={(e) =>
                                             setAbsentDays(e.target.value)
                                         }
                                         readOnly={true}
+                                        disabled={!isCalculated}
+                                    />
+                                </FloatingLabel>
+                            </Col>
+                        </Row>
+                    </Form.Group>
+                    <Form.Group className="mb-3">
+                        <Row>
+                            <Col xs={7}>
+                                <Form.Label htmlFor="salary">
+                                    {"급여"}
+                                </Form.Label>
+                            </Col>
+                            <Col>
+                                <Form.Text className="text-info">
+                                    {"*보너스는 직접 입력하세요."}
+                                </Form.Text>
+                            </Col>
+                        </Row>
+                        <Row id="salary" className="mb-3">
+                            <Col>
+                                <FloatingLabel
+                                    controlId="basicSalary"
+                                    label="기본급"
+                                >
+                                    <Form.Control
+                                        type="text"
+                                        value={formattedBasicSalary}
+                                        onChange={(e) =>
+                                            setFormattedBasicSalary(
+                                                e.target.value
+                                            )
+                                        }
+                                        readOnly={true}
+                                        disabled={!isCalculated}
+                                    />
+                                </FloatingLabel>
+                            </Col>
+                            <Col>
+                                <FloatingLabel
+                                    controlId="incentiveSalary"
+                                    label="성과급"
+                                >
+                                    <Form.Control
+                                        type="text"
+                                        value={formattedIncentiveSalary}
+                                        onChange={(e) =>
+                                            setFormattedIncentiveSalary(
+                                                e.target.value
+                                            )
+                                        }
+                                        readOnly={true}
+                                        disabled={!isCalculated}
+                                    />
+                                </FloatingLabel>
+                            </Col>
+                            <Col>
+                                <FloatingLabel
+                                    controlId="bonusSalary"
+                                    label="보너스"
+                                >
+                                    <Form.Control
+                                        type="text"
+                                        value={formattedBonusSalary}
+                                        onChange={handleBonusSalaryChange}
+                                        disabled={!isCalculated}
+                                    />
+                                </FloatingLabel>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col>
+                                <FloatingLabel
+                                    controlId="totalSalary"
+                                    label="총액"
+                                >
+                                    <Form.Control
+                                        type="text"
+                                        value={totalSalary}
+                                        readOnly={true}
+                                        disabled={!isCalculated}
                                     />
                                 </FloatingLabel>
                             </Col>
