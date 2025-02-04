@@ -13,7 +13,11 @@ import ConfirmModal from "../../modals/ConfirmModal";
 import AlertModal from "../../modals/AlertModal";
 import { SingleDatePicker } from "../../../util/CustomDatePicker";
 import Loader from "../../../util/Loader";
-import { requestAttendanceList } from "../../../servers/employServer";
+import {
+    requestAttendanceList,
+    requestSalaryDuplicateCheck,
+    requestRegisterSalary,
+} from "../../../servers/employServer";
 import { formatCurrency, dateFormatter } from "../../../util/formatter";
 
 function SalaryModal(props) {
@@ -67,6 +71,13 @@ function SalaryModal(props) {
     const [formattedBonusSalary, setFormattedBonusSalary] = useState("0");
     const [totalSalary, setTotalSalary] = useState("0");
 
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [showAlertModal, setShowAlertModal] = useState(false);
+    const [alertTitle, setAlertTitle] = useState("");
+    const [alertText, setAlertText] = useState("");
+
+    const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
     const [employeeNumberError, setEmployeeNumberError] = useState(false);
     const [employeeNumberErrorMessage, setEmployeeNumberErrorMessage] =
         useState("");
@@ -78,6 +89,15 @@ function SalaryModal(props) {
 
     const handleCloseSearchEmployeeModal = () =>
         setShowSearchEmployeeModal(false);
+
+    const handleShowConfirmModal = () => setShowConfirmModal(true);
+
+    const handleCloseConfirmModal = () => setShowConfirmModal(false);
+
+    const handleCloseAlertModal = () => {
+        setShowAlertModal(false);
+        updateData(`${currentYear}-${currentMonth}`);
+    };
 
     const handleYearChange = (e) => {
         const year = e.target.value;
@@ -277,6 +297,8 @@ function SalaryModal(props) {
         setFormattedIncentiveSalary("0");
         setPaidBonusSalary(0);
         setTotalSalary(0);
+        setError(false);
+        setErrorMessage("");
         setEmployeeNumberError(false);
         setEmployeeNumberErrorMessage("");
         setCommuteDateError(false);
@@ -304,6 +326,86 @@ function SalaryModal(props) {
             )
         );
     }, [paidBasicSalary, paidIncentiveSalary, paidBonusSalary]);
+
+    const handleSubmit = async () => {
+        handleCloseConfirmModal();
+
+        if (!selectedEmployeeNumber) {
+            setEmployeeNumberError(true);
+            setEmployeeNumberErrorMessage("사번을 선택하여주세요.");
+            setCommuteDateError(true);
+            setCommuteDateErrorMessage("근태정보를 조회해주세요.");
+            return;
+        }
+
+        if (selectedEmployeeNumber) {
+            setEmployeeNumberError(false);
+            setEmployeeNumberErrorMessage("");
+        }
+
+        if (!isCalculated) {
+            setCommuteDateError(true);
+            setCommuteDateErrorMessage("근태정보를 조회해주세요.");
+            return;
+        }
+
+        if (isCalculated) {
+            setCommuteDateError(false);
+            setEmployeeNumberErrorMessage("");
+        }
+
+        const salaryData = {
+            employeeNumber: selectedEmployeeNumber,
+            salaryPeriodDateStart: salaryPeriodDateStart,
+            salaryPeriodDateEnd: salaryPeriodDateEnd,
+            salaryPaymentDate: dateFormatter(salaryPaymentDate),
+            commuteDays: commuteDays,
+            lateCommuteDays: lateCommuteDays,
+            earlyDepartureDays: earlyDepartureDays,
+            combinedLateEarlyDays: combinedLateEarlyDays,
+            absentDays: absentDays,
+            paidBasicSalary: paidBasicSalary,
+            paidIncentiveSalary: paidIncentiveSalary,
+            paidBonusSalary: paidBonusSalary,
+        };
+
+        const duplicateResponse = await requestSalaryDuplicateCheck(salaryData);
+
+        if (duplicateResponse.result === "DP") {
+            setError(true);
+            setErrorMessage("중복된 요청입니다.");
+            return;
+        }
+
+        if (duplicateResponse.result === "SE") {
+            setError(true);
+            setErrorMessage("등록 중 문제가 발생했습니다. 다시 시도해주세요.");
+            return;
+        }
+
+        if (duplicateResponse.result === "SU") {
+            setError(false);
+            setErrorMessage("");
+        }
+
+        const registerResponse = await requestRegisterSalary(salaryData);
+
+        if (registerResponse.result === "SE") {
+            setError(true);
+            setErrorMessage("등록 중 문제가 발생했습니다. 다시 시도해주세요.");
+            return;
+        }
+
+        if (registerResponse.result === "SU") {
+            setError(false);
+            setErrorMessage("");
+            setAlertTitle("등록완료");
+            setAlertText("급여 등록을 완료하였습니다.");
+            setShowAlertModal(true);
+            handleCloseSalaryModal();
+        }
+    };
+
     return (
         <>
             <Modal
@@ -586,9 +688,16 @@ function SalaryModal(props) {
                             </Col>
                         </Row>
                     </Form.Group>
+                    <Form.Group>
+                        {error && (
+                            <Form.Text className="text-error">
+                                {errorMessage}
+                            </Form.Text>
+                        )}
+                    </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="success" onClick={handleCloseSalaryModal}>
+                    <Button variant="success" onClick={handleShowConfirmModal}>
                         {"등록"}
                     </Button>
                     <Button variant="danger" onClick={handleCloseSalaryModal}>
@@ -604,6 +713,21 @@ function SalaryModal(props) {
                 setSelectedEmployeeNumber={setSelectedEmployeeNumber}
                 classList={classList}
                 selectedEmployeeList={[]}
+            />
+            <ConfirmModal
+                showConfirmModal={showConfirmModal}
+                handleCloseConfirmModal={handleCloseConfirmModal}
+                handleConfirm={handleSubmit}
+                confirmTitle={"확인"}
+                confirmText={`${dateFormatter(
+                    salaryPaymentDate
+                )} 급여 정보를 등록하시겠습니까?`}
+            />
+            <AlertModal
+                showAlertModal={showAlertModal}
+                handleCloseAlertModal={handleCloseAlertModal}
+                alertTitle={alertTitle}
+                alertText={alertText}
             />
         </>
     );

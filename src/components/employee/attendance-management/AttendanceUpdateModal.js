@@ -209,7 +209,7 @@ function AttendanceUpdateModal(props) {
             const duplicateResponse = await requestAttendanceDuplicateCheck(
                 submitData
             );
-            if (duplicateResponse !== "DP") {
+            if (duplicateResponse === "DP") {
                 setError(true);
                 setErrorMessage("중복된 요청입니다.");
                 return;
